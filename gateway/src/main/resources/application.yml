@@ -1,0 +1,74 @@
+server:
+  address: 0.0.0.0
+  port: 10001
+
+welcome:
+  message: local dev profile for asr appframework server
+
+spring:
+  profiles:
+    active: dev
+  messages:
+    basename: i18n/messages/messages
+    encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+
+  application:
+    name: ezml-gateway
+
+  #spring 默认的json序列化, 设置时区与日期格式
+  jackson:
+    time-zone: GMT+8
+    #date-format: yyyy-MM-dd HH:mm:ss
+
+  #jmx远程管理
+  jmx:
+    enabled: false
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true  # 服务名小写
+
+      routes:
+        - id: demo-service
+          # lb代表从注册中心获取服务，且已负载均衡方式转发
+          uri: lb://demo-service   #注册中心的服务名称
+          predicates:
+            - Path=/demo/**    #匹配的请求路由
+            # 加上StripPrefix=1，否则转发到后端服务时会带上consumer前缀
+          filters:
+            - StripPrefix=1
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10000/eureka/
+
+
+# 远程管理,暴露监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+# API docs
+springdoc:
+  api-docs:
+    enabled: true
+    path: /apidocs
+  swagger-ui:
+    path: /swagger-ui.html
+
