@@ -1,12 +1,36 @@
 server:
-  port: 10010
+  port: 10020
 
 spring:
   application:
-    name: demo-service
+    name: demo
 eureka:
   instance:
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 5
   client:
+    healthcheck:
+      enabled: true
     service-url:
-      defaultZone: http://127.0.0.1:10000/eureka/
+      defaultZone: http://127.0.0.1:10010/eureka/
+
+
+# 远程管理,暴露监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+# API docs
+springdoc:
+  api-docs:
+    enabled: true
+    path: /apidocs
+  swagger-ui:
+    path: /swagger-ui.html
+

@@ -1,9 +1,9 @@
 server:
   address: 0.0.0.0
-  port: 10001
+  port: 10000
 
 welcome:
-  message: local dev profile for asr appframework server
+  message: local dev profile for gateway server
 
 spring:
   profiles:
@@ -17,7 +17,7 @@ spring:
       max-request-size: 500MB
 
   application:
-    name: ezml-gateway
+    name: gateway
 
   #spring 默认的json序列化, 设置时区与日期格式
   jackson:
@@ -35,15 +35,15 @@ spring:
           enabled: true
           lower-case-service-id: true  # 服务名小写
 
-      routes:
-        - id: demo-service
-          # lb代表从注册中心获取服务，且已负载均衡方式转发
-          uri: lb://demo-service   #注册中心的服务名称
-          predicates:
-            - Path=/demo/**    #匹配的请求路由
-            # 加上StripPrefix=1，否则转发到后端服务时会带上consumer前缀
-          filters:
-            - StripPrefix=1
+#      routes:
+#        - id: demo-service
+#          # lb代表从注册中心获取服务，且已负载均衡方式转发
+#          uri: lb://demo-service   #注册中心的服务名称
+#          predicates:
+#            - Path=/demo/**    #匹配的请求路由
+#            # 加上StripPrefix=1，否则转发到后端服务时会带上consumer前缀
+#          filters:
+#            - StripPrefix=1
 
 
 eureka:
@@ -51,7 +51,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://127.0.0.1:10000/eureka/
+      defaultZone: http://127.0.0.1:10010/eureka/
 
 
 # 远程管理,暴露监控端点
@@ -64,11 +64,9 @@ management:
     health:
       show-details: ALWAYS
 
-# API docs
-springdoc:
-  api-docs:
-    enabled: true
-    path: /apidocs
-  swagger-ui:
-    path: /swagger-ui.html
+
+app:
+  filter:
+    extract-request-params: true
+    extract-response-body: true
 

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @OpenAPIDefinition(
         info = @Info(
-                title = "gateway API",
+                title = "demo API",
                 version = "v1.0.1",
                 description = "gateway服务"
         )
