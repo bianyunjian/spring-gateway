@@ -2,10 +2,6 @@ package com.aispeech.ezml.gateway.filter;
 
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -13,6 +9,8 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,16 +19,15 @@ import java.io.IOException;
 
 /**
  * 全局过滤器
- * 所有请求都会执行
- * 可拦截get、post等请求做逻辑处理
+ * 所有响应都会执行
  */
 @Component
-public class ResponseGlobalFilter implements GlobalFilter, GatewayFilter, Ordered {
+public class F3_ResponseFilter implements WebFilter {
     @Value("${app.filter.extract-response-body}")
     public boolean EXTRACT_RESPONSE_BODY = true;
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
         if (EXTRACT_RESPONSE_BODY == false) {
             return chain.filter(exchange);
@@ -85,9 +82,5 @@ public class ResponseGlobalFilter implements GlobalFilter, GatewayFilter, Ordere
         return decoratedResponse;
     }
 
-    @Override
-    public int getOrder() {
-        return -2;
 
-    }
 }

@@ -67,6 +67,9 @@ management:
 
 app:
   filter:
-    extract-request-params: true
-    extract-response-body: true
+    extract-request-params: true     #是否提取请求参数， 上线u若影响性能可以关闭
+    extract-response-body: true      #是否提取响应体， 上线u若影响性能可以关闭
+    enable-token-auth: true          #是否开启token验证
+    token-auth-ignore-path: /hello,/login,/loginOut,/refreshToken  #忽略token验证的路由path， 多个path使用逗号分隔
+
 

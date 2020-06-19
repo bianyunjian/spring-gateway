@@ -1,4 +1,4 @@
-package com.aispeech.ezml.demoservice.auth;
+package com.aispeech.ezml.gateway.auth;
 
 import lombok.Data;
 

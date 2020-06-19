@@ -1,9 +1,6 @@
 package com.aispeech.ezml.gateway.filter;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.factory.rewrite.CachedBodyOutputMessage;
 import org.springframework.cloud.gateway.support.BodyInserterContext;
 import org.springframework.cloud.gateway.support.DefaultServerRequest;
@@ -19,6 +16,8 @@ import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -30,12 +29,12 @@ import java.util.List;
  * 可拦截get、post等请求做逻辑处理
  */
 @Component
-public class RequestGlobalFilter implements GlobalFilter, GatewayFilter, Ordered {
+public class F1_RequestFilter implements WebFilter {
     @Value("${app.filter.extract-request-params}")
     public boolean EXTRACT_REQUEST_PARAMS = true;
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest serverHttpRequest = exchange.getRequest();
         String uriString = serverHttpRequest.getURI().toString();
         System.out.println("request uri:" + uriString);
@@ -113,7 +112,9 @@ public class RequestGlobalFilter implements GlobalFilter, GatewayFilter, Ordered
         }
 
         return chain.filter(exchange);
+
     }
+
 
     private boolean checkIfFileUploadRequest(ServerHttpRequest request) {
         HttpHeaders headers = request.getHeaders();
@@ -137,9 +138,4 @@ public class RequestGlobalFilter implements GlobalFilter, GatewayFilter, Ordered
         return false;
     }
 
-
-    @Override
-    public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE;
-    }
 }

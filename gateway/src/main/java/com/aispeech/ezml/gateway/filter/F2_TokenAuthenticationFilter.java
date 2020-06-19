@@ -5,10 +5,7 @@ import com.aispeech.ezml.gateway.base.ErrorCode;
 import com.aispeech.ezml.gateway.base.UserTokenInfo;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.Ordered;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,19 +13,38 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 对客户端header 中的 Authorization 信息进行认证
  */
 @Component
-public class TokenAuthenticationFilter implements GlobalFilter, GatewayFilter, Ordered {
+public class F2_TokenAuthenticationFilter implements WebFilter {
+    @Value("${app.filter.enable-token-auth}")
+    public boolean ENABLE_TOKEN_AUTH = true;
+
+    private List<String> tokenAuthIgnorePathList = new ArrayList<>();
 
     private static final String Bearer_Prefix = "Bearer ";
     private static final String Authorization_Header = "Authorization";
 
+    public F2_TokenAuthenticationFilter(@Value("${app.filter.token-auth-ignore-path}") String tokenAuthIgnorePath) {
+        if (StringUtils.isEmpty(tokenAuthIgnorePath) == false) {
+            String[] array = tokenAuthIgnorePath.split(",");
+            for (String path :
+                    array) {
+                tokenAuthIgnorePathList.add(path.trim());
+            }
+        }
+    }
+
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpRequest.Builder mutate = request.mutate();
         ServerHttpResponse response = exchange.getResponse();
@@ -88,6 +104,18 @@ public class TokenAuthenticationFilter implements GlobalFilter, GatewayFilter, O
 
     }
 
+    private boolean checkNeedAuth(ServerHttpRequest request) {
+        if (ENABLE_TOKEN_AUTH == false) return false;
+
+        String path = request.getPath().toString();
+        if (tokenAuthIgnorePathList.contains(path)) {
+            System.out.println("match token auth ignore path with [" + path + "]");
+            return false;
+        }
+
+        return true;
+    }
+
     private UserTokenInfo parseToken(String token) {
         if (StringUtils.isEmpty(token)) {
             return null;
@@ -102,16 +130,6 @@ public class TokenAuthenticationFilter implements GlobalFilter, GatewayFilter, O
         tokenInfo.setUserName("Bian Yun Jian");
         return tokenInfo;
     }
-
-    private boolean checkNeedAuth(ServerHttpRequest request) {
-        return true;
-    }
-
-    @Override
-    public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 1;
-    }
-
 
     /**
      * 自定义返回错误信息
