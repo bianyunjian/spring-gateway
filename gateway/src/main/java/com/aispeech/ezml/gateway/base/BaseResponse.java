@@ -4,24 +4,25 @@ import lombok.Data;
 
 /**
  * 基础API响应VO类
- *
- *
  */
 @Data
 public class BaseResponse<T> {
 
     private static final String DEFAULT_MESSAGE = "";
 
-    private Integer errorCode;
+    private Integer errorCode = ErrorCode.SUCCESS.getValue();
 
     private T data;
 
     private String message;
 
+    public boolean isSuccess() {
+        return this.errorCode == (ErrorCode.SUCCESS.getValue());
+    }
 
     public void success() {
 
-        this.errorCode = ErrorCode.DEFAULT.getValue();
+        this.errorCode = ErrorCode.SUCCESS.getValue();
     }
 
     public void success(String message) {
@@ -49,5 +50,6 @@ public class BaseResponse<T> {
             this.errorCode = errorCode.getValue();
         }
     }
+
 
 }

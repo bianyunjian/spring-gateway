@@ -3,6 +3,8 @@ package com.aispeech.ezml.gateway.filter;
 import com.aispeech.ezml.gateway.base.BaseResponse;
 import com.aispeech.ezml.gateway.base.ErrorCode;
 import com.aispeech.ezml.gateway.base.UserTokenInfo;
+import com.aispeech.ezml.gateway.support.TokenManager;
+import com.aispeech.ezml.gateway.support.TokenUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +32,6 @@ public class F2_TokenAuthenticationFilter implements WebFilter {
 
     private List<String> tokenAuthIgnorePathList = new ArrayList<>();
 
-    private static final String Bearer_Prefix = "Bearer ";
-    private static final String Authorization_Header = "Authorization";
 
     public F2_TokenAuthenticationFilter(@Value("${app.filter.token-auth-ignore-path}") String tokenAuthIgnorePath) {
         if (StringUtils.isEmpty(tokenAuthIgnorePath) == false) {
@@ -57,30 +57,31 @@ public class F2_TokenAuthenticationFilter implements WebFilter {
             }
 
             //获取header中的Authorization
-            String header = request.getHeaders().getFirst(Authorization_Header);
-            if (header == null || !header.startsWith(Bearer_Prefix)) {
+            String header = request.getHeaders().getFirst(TokenUtil.Authorization_Header);
+            if (header == null || !header.startsWith(TokenUtil.Bearer_Prefix)) {
                 throw new RuntimeException("请求头中Authorization信息为空");
             }
             //截取Authorization Bearer
-            String token = header.substring(Bearer_Prefix.length());
+            String token = header.substring(TokenUtil.Bearer_Prefix.length());
 
             boolean tokenValid = false;
             if (!StringUtils.isEmpty(token)) {
 
                 //有token,处理token
-                UserTokenInfo tokenInfo = parseToken(token);
+                UserTokenInfo tokenInfo = TokenUtil.decodeToken(token);
                 if (tokenInfo != null && tokenInfo.isValid()) {
-                    //token有效token
-                    //把用户信息设置到header中，传递给后端服务
-                    mutate.header("userId", tokenInfo.getUserId());
-                    mutate.header("userName", tokenInfo.getUserName());
-                    mutate.build();
-                    tokenValid = true;
+                    //检查token是否在缓存中, 如果不在缓存中，说明已经失效
+                    boolean checkPass = TokenManager.checkAccessToken(tokenInfo.getUserId(), token);
+                    if (checkPass) {
+                        //把用户信息设置到header中，传递给后端服务
+                        mutate.header("userId", tokenInfo.getUserId());
+                        mutate.header("userName", tokenInfo.getUserName());
+                        mutate.build();
+                        tokenValid = true;
+                    }
                 } else {
-                    //token 无效或者过期的处理
-                    tokenValid = false;
+                    //TODO token 无效或者过期的处理
                 }
-
             }
 
             if (tokenValid == false) {
@@ -116,20 +117,6 @@ public class F2_TokenAuthenticationFilter implements WebFilter {
         return true;
     }
 
-    private UserTokenInfo parseToken(String token) {
-        if (StringUtils.isEmpty(token)) {
-            return null;
-        }
-        UserTokenInfo tokenInfo = new UserTokenInfo();
-        if (token.startsWith("123")) {
-            tokenInfo.setValid(true);
-        } else {
-            tokenInfo.setValid(false);
-        }
-        tokenInfo.setUserId("byj001");
-        tokenInfo.setUserName("Bian Yun Jian");
-        return tokenInfo;
-    }
 
     /**
      * 自定义返回错误信息

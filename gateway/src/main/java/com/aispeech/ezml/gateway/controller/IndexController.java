@@ -3,6 +3,12 @@ package com.aispeech.ezml.gateway.controller;
 
 import com.aispeech.ezml.gateway.auth.*;
 import com.aispeech.ezml.gateway.base.BaseResponse;
+import com.aispeech.ezml.gateway.base.UserTokenInfo;
+import com.aispeech.ezml.gateway.service.UserService;
+import com.aispeech.ezml.gateway.support.TokenManager;
+import com.aispeech.ezml.gateway.support.TokenUtil;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,9 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Clock;
+import java.util.Calendar;
+import java.util.Date;
 
 @RestController
 public class IndexController {
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/hello")
     public String hello() {
@@ -31,17 +42,67 @@ public class IndexController {
         BaseResponse<LoginResp> obj = new BaseResponse<LoginResp>();
         LoginResp resp = new LoginResp();
 
-        obj.success("success", resp);
+        UserInfoReq userServiceReq = new UserInfoReq();
+        userServiceReq.setUserName(param.getUserName());
+        BaseResponse<UserInfoResp> userServiceResp = userService.getUserInfo(userServiceReq);
+        if (userServiceResp != null && userServiceResp.isSuccess() && userServiceResp.getData() != null) {
+            UserInfoResp userData = userServiceResp.getData();
+            String passwordBase64 = userData.getPassword();
+            String userName = userData.getUserName();
+            String userId = userData.getUserId();
+            if (TokenUtil.verifyPassword(param.getPassword(), passwordBase64) == false) {
+                obj.fail("username or password incorrect");
+                return obj;
+            }
+            resp.setUserId(userId);
+            resp.setUserName(userName);
+
+            Date issueAt = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES);
+            Date expireAt = calendar.getTime();
+            resp.setIssuedAt(issueAt);
+            resp.setExpiresAt(expireAt);
+
+            String[] audienceArray = {resp.getUserId(), resp.getUserName()};
+            String accessToken = TokenUtil.generateAccessToken(issueAt, expireAt, audienceArray);
+            resp.setAccessToken(accessToken);
+
+
+            Calendar calendar4RefreshToken = Calendar.getInstance();
+            calendar4RefreshToken.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES * 10);
+            Date expireAt4RefreshToken = calendar4RefreshToken.getTime();
+            String refreshToken = TokenUtil.generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray);
+            resp.setRefreshToken(refreshToken);
+            resp.setValid(true);
+            obj.success("success", resp);
+
+            //TokenManager加入到缓存中
+            TokenManager.updateTokenCache(resp);
+
+        } else {
+            obj.fail("user not exist");
+        }
         return obj;
     }
+
 
     @PostMapping(value = "/loginOut")
     public BaseResponse<LoginOutResp> loginOut(@RequestBody @Validated LoginOutReq param) {
 
-        BaseResponse<LoginOutResp> obj = new BaseResponse<LoginOutResp>();
+        BaseResponse<LoginOutResp> obj = new BaseResponse<>();
         LoginOutResp resp = new LoginOutResp();
 
-        obj.success("success", resp);
+        if (param != null && StringUtils.isEmpty(param.getAccessToken()) == false) {
+            UserTokenInfo userTokenInfo = TokenUtil.decodeToken(param.getAccessToken());
+            if (userTokenInfo != null
+                    && StringUtils.isEmpty(userTokenInfo.getUserId()) == false) {
+                TokenManager.removeTokenCache(userTokenInfo.getUserId());
+                obj.success("success login out");
+                return obj;
+            }
+        }
+        obj.fail("fail to login out");
         return obj;
     }
 
@@ -51,7 +112,43 @@ public class IndexController {
         BaseResponse<RefreshTokenResp> obj = new BaseResponse<RefreshTokenResp>();
         RefreshTokenResp resp = new RefreshTokenResp();
 
-        obj.success("success", resp);
+        String requestRefreshToken = param.getRefreshToken();
+        UserTokenInfo userTokenInfo = TokenUtil.decodeToken(requestRefreshToken);
+        if (userTokenInfo != null
+                && StringUtils.isEmpty(userTokenInfo.getUserId()) == false) {
+
+            userTokenInfo = TokenManager.getUserTokenInfo(userTokenInfo.getUserId());
+            boolean checkValid = userTokenInfo != null && userTokenInfo.getRefreshToken().equals(requestRefreshToken);
+            if (checkValid) {
+
+                Date issueAt = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES);
+                Date expireAt = calendar.getTime();
+                userTokenInfo.setIssuedAt(issueAt);
+                userTokenInfo.setExpiresAt(expireAt);
+
+                String[] audienceArray = {
+                        userTokenInfo.getUserId(),
+                        userTokenInfo.getUserName()
+                };
+                String accessToken = TokenUtil.generateAccessToken(issueAt, expireAt, audienceArray);
+                resp.setAccessToken(accessToken);
+                userTokenInfo.setAccessToken(accessToken);
+
+                Calendar calendar4RefreshToken = Calendar.getInstance();
+                calendar4RefreshToken.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES * 10);
+                Date expireAt4RefreshToken = calendar4RefreshToken.getTime();
+                String newRefreshToken = TokenUtil.generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray);
+                resp.setRefreshToken(newRefreshToken);
+                userTokenInfo.setRefreshToken(newRefreshToken);
+                TokenManager.updateTokenCache(userTokenInfo);
+
+                obj.success("success refresh token", resp);
+            }
+        }
+
+        obj.fail("fail to refresh token, refresh token is invalid");
         return obj;
     }
 }

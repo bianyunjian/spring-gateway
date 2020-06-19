@@ -53,6 +53,14 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:10010/eureka/
 
+#feign的配置，连接超时及读取超时配置
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
 
 # 远程管理,暴露监控端点
 management:
@@ -71,5 +79,7 @@ app:
     extract-response-body: true      #是否提取响应体， 上线u若影响性能可以关闭
     enable-token-auth: true          #是否开启token验证
     token-auth-ignore-path: /hello,/login,/loginOut,/refreshToken  #忽略token验证的路由path， 多个path使用逗号分隔
-
+  token:
+    expire-minutes: 5
+    sign-key: ezml-sign-key
 

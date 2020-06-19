@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class UserInfoResp {
     String userId;
-     String userName;
+    String userName;
+    String password;
 }

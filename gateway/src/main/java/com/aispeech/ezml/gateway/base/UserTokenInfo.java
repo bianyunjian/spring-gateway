@@ -2,14 +2,17 @@ package com.aispeech.ezml.gateway.base;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 public class UserTokenInfo {
+
     String userId;
     String userName;
-    boolean isValid;
-    LocalDateTime createTime;
-    LocalDateTime expireTime;
+    String accessToken;
+    String refreshToken;
+    Date issuedAt;
+    Date expiresAt;
 
+    boolean isValid;
 }

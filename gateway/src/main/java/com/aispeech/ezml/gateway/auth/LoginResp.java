@@ -1,13 +1,9 @@
 package com.aispeech.ezml.gateway.auth;
 
+import com.aispeech.ezml.gateway.base.UserTokenInfo;
 import lombok.Data;
 
 @Data
-public class LoginResp {
-    String userId;
-    String userName;
-    String displayName;
-    String accessToken;
-    String refreshToken;
+public class LoginResp extends UserTokenInfo {
 
 }

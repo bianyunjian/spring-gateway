@@ -1,7 +1,7 @@
 package com.aispeech.ezml.gateway.base;
 
 public enum ErrorCode {
-    DEFAULT(0),
+    SUCCESS(0),
     ERROR(1),
     UNAUTHORIZED(401);
 
