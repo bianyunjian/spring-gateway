@@ -22,7 +22,7 @@ import java.io.IOException;
  * 所有响应都会执行
  */
 @Component
-public class F3_ResponseFilter implements WebFilter {
+public class F4_ResponseFilter implements WebFilter {
     @Value("${app.filter.extract-response-body}")
     public boolean EXTRACT_RESPONSE_BODY = true;
 

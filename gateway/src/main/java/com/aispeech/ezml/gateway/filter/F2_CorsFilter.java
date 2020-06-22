@@ -13,7 +13,7 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 @Component
-public class F4_CorsFilter implements WebFilter {
+public class F2_CorsFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange ctx, WebFilterChain chain) {
 

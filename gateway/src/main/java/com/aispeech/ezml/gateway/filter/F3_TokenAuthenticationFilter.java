@@ -26,14 +26,14 @@ import java.util.List;
  * 对客户端header 中的 Authorization 信息进行认证
  */
 @Component
-public class F2_TokenAuthenticationFilter implements WebFilter {
+public class F3_TokenAuthenticationFilter implements WebFilter {
     @Value("${app.filter.enable-token-auth}")
     public boolean ENABLE_TOKEN_AUTH = true;
 
     private List<String> tokenAuthIgnorePathList = new ArrayList<>();
 
 
-    public F2_TokenAuthenticationFilter(@Value("${app.filter.token-auth-ignore-path}") String tokenAuthIgnorePath) {
+    public F3_TokenAuthenticationFilter(@Value("${app.filter.token-auth-ignore-path}") String tokenAuthIgnorePath) {
         if (StringUtils.isEmpty(tokenAuthIgnorePath) == false) {
             String[] array = tokenAuthIgnorePath.split(",");
             for (String path :
