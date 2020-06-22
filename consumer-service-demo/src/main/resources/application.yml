@@ -3,16 +3,16 @@ server:
 
 spring:
   application:
-    name: demo
+    name: demo    #服务注册的名称
 eureka:
   instance:
-    prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 5
+    prefer-ip-address: true #优先使用ip地址注册
+    lease-renewal-interval-in-seconds: 5  #表示eureka client发送心跳给server端的频率
+    lease-expiration-duration-in-seconds: 5   #等待下一次心跳的超时时间，在这个时间内若没收到下一次心跳，则将移除该instance
   client:
-    healthcheck:
+    healthcheck:  #健康检查， 如果启用该配置， 则需要引入 spring-boot-starter-actuator
       enabled: true
-    service-url:
+    service-url:  #eureka server的地址
       defaultZone: http://127.0.0.1:10010/eureka/
 
 

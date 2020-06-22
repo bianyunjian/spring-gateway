@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,11 @@ import java.util.List;
 
 @Service
 public class UserService {
+    @Value("${app.service.user-service}")
+    public String USER_SERVICE = "DEMO";
+    @Value("${app.service.user-service-api}")
+    public String USER_SERVICE_API = "/getUserInfo";
 
-    private static final String SERVICE_NAME = "DEMO";
 
     @Autowired
     private DiscoveryClient discoveryClient;
@@ -29,7 +33,7 @@ public class UserService {
         String serviceUri = "";
         List<String> serviceNames = discoveryClient.getServices();
         for (String serviceName : serviceNames) {
-            if (serviceName.equalsIgnoreCase(SERVICE_NAME)) {
+            if (serviceName.equalsIgnoreCase(USER_SERVICE)) {
 
                 List<ServiceInstance> serviceInstances = discoveryClient.getInstances(serviceName);
                 for (ServiceInstance serviceInstance : serviceInstances) {
@@ -41,7 +45,7 @@ public class UserService {
         }
         if (StringUtils.isEmpty(serviceUri) == false) {
 
-            String requestUri = serviceUri + "/getUserInfo";
+            String requestUri = serviceUri + USER_SERVICE_API;
             String respJson = HttpUtils.doPostJson(requestUri, JSON.toJSONString(req));
             if (StringUtils.isEmpty(respJson) == false) {
                 resp = JSON.parseObject(respJson, new TypeReference<BaseResponse<UserInfoResp>>() {

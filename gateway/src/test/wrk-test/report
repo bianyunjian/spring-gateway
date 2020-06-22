@@ -1,0 +1,91 @@
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiMTAwMDEiLCJieWoiXSwiZXhwIjoxNTkyNTYwNTg2LCJpYXQiOjE1OTI1NjAyODZ9.xVyc4VfWa5iptLSsPBM7Njv_yZr-IPaoN3WvCK8h40Y
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiMTAwMDEiLCJieWoiXSwiZXhwIjoxNTkyNTYwNTYzLCJpYXQiOjE1OTI1NjAyNjN9.QPQb2SQhvGsj35tm0dib_FlxeX1tNe7oPB2j-xNdrwA
+
+https://git.aispeech.com.cn/ezml/gateway.git
+
+
+
+ wrk -t1 -c10 -d10s 
+ Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     4.39ms    1.93ms  22.77ms   69.85%
+    Req/Sec     2.31k   138.57     2.48k    90.00%
+  Latency Distribution
+     50%    4.34ms
+     75%    5.52ms
+     90%    6.63ms
+     99%   10.35ms
+  23004 requests in 10.00s, 5.40MB read
+  Non-2xx or 3xx responses: 23004
+Requests/sec:   2300.11
+Transfer/sec:    552.57KB
+
+
+wrk -t5 -c50 -d10s --script=testGetUserInfoPerformance.lua --latency http://localhost:10000/demo/getUserInfo
+Running 10s test @ http://localhost:10000/demo/getUserInfo
+  5 threads and 50 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    22.10ms    4.43ms  96.49ms   77.11%
+    Req/Sec   454.66     30.71   530.00     84.60%
+  Latency Distribution
+     50%   21.57ms
+     75%   24.21ms
+     90%   27.08ms
+     99%   34.82ms
+  22647 requests in 10.01s, 5.31MB read
+  Non-2xx or 3xx responses: 22647
+Requests/sec:   2262.23
+Transfer/sec:    543.46KB
+
+
+wrk -t10 -c100 -d10s --script=testGetUserInfoPerformance.lua --latency http://localhost:10000/demo/getUserInfo
+Running 10s test @ http://localhost:10000/demo/getUserInfo
+  10 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    43.70ms    5.51ms 103.26ms   74.84%
+    Req/Sec   229.41     21.63   424.00     74.40%
+  Latency Distribution
+     50%   43.42ms
+     75%   46.71ms
+     90%   50.21ms
+     99%   58.41ms
+  22853 requests in 10.03s, 5.36MB read
+  Non-2xx or 3xx responses: 22853
+Requests/sec:   2278.33
+Transfer/sec:    547.33KB
+
+
+wrk -t10 -c500 -d20s --script=testGetUserInfoPerformance.lua --latency http://localhost:10000/demo/getUserInfo
+Running 20s test @ http://localhost:10000/demo/getUserInfo
+  10 threads and 500 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   212.58ms   28.42ms 593.56ms   91.04%
+    Req/Sec   232.09     94.89   737.00     67.03%
+  Latency Distribution
+     50%  215.26ms
+     75%  222.46ms
+     90%  229.61ms
+     99%  250.24ms
+  46238 requests in 20.07s, 10.85MB read
+  Non-2xx or 3xx responses: 46238
+Requests/sec:   2303.48
+Transfer/sec:    553.37KB
+
+
+wrk -t20 -c500 -d20s --script=testGetUserInfoPerformance.lua --latency http://localhost:10000/demo/getUserInfo
+Running 20s test @ http://localhost:10000/demo/getUserInfo
+  20 threads and 500 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   215.33ms   57.59ms   1.17s    91.65%
+    Req/Sec   116.20     51.98   490.00     65.34%
+  Latency Distribution
+     50%  218.65ms
+     75%  228.23ms
+     90%  237.61ms
+     99%  328.60ms
+  45428 requests in 20.08s, 10.66MB read
+  Non-2xx or 3xx responses: 45428
+Requests/sec:   2262.50
+Transfer/sec:    543.53KB
+
+
+
