@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -107,6 +108,11 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
 
     private boolean checkNeedAuth(ServerHttpRequest request) {
         if (ENABLE_TOKEN_AUTH == false) return false;
+
+        String method=request.getMethodValue();
+        if(method.equalsIgnoreCase(HttpMethod.OPTIONS.toString())){
+            return false;
+        }
 
         String path = request.getPath().toString();
         if (tokenAuthIgnorePathList.size() > 0) {
