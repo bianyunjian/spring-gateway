@@ -70,11 +70,13 @@ app:
     extract-request-params: true     #是否提取请求参数， 上线u若影响性能可以关闭
     extract-response-body: true      #是否提取响应体， 上线u若影响性能可以关闭
     enable-token-auth: true          #是否开启token验证
-    token-auth-ignore-path: /hello,/login,/loginOut,/refreshToken #忽略token验证的路由path， 多个path使用逗号分隔
+    token-auth-ignore-path: /actuator,/actuator/*,/hello,/login,/loginOut,/refreshToken #忽略token验证的路由path， 多个path使用逗号分隔
   token:
     expire-minutes: 30   #token过期时间（分钟）
     sign-key: ezml-sign-key  #token生成使用的加密密钥
   service:
-    user-service: USER-SERVICE  #用户服务的注册名称
-    user-service-api: /user/getUserInfo  #用户服务的接口地址
+#    user-service: USER-SERVICE  #用户服务的注册名称
+#    user-service-api: /user/getUserInfo  #用户服务的接口地址
+    user-service: DEMO  #用户服务的注册名称
+    user-service-api: /getUserInfo  #用户服务的接口地址
 

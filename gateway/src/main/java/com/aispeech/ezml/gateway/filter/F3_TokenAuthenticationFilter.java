@@ -109,10 +109,24 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
         if (ENABLE_TOKEN_AUTH == false) return false;
 
         String path = request.getPath().toString();
-        if (tokenAuthIgnorePathList.contains(path)) {
-            System.out.println("match token auth ignore path with [" + path + "]");
-            return false;
+        if (tokenAuthIgnorePathList.size() > 0) {
+            for (String ignorePathPattern :
+                    tokenAuthIgnorePathList) {
+                if (ignorePathPattern.contains("*")) {
+                    String matchPattern = ignorePathPattern.replace("*", "");
+                    if (path.contains(matchPattern)) {
+                        System.out.println("match token auth ignore path with [" + path + "]");
+                        return false;
+                    }
+                } else {
+                    if (ignorePathPattern.equalsIgnoreCase(path)) {
+                        System.out.println("match token auth ignore path with [" + path + "]");
+                        return false;
+                    }
+                }
+            }
         }
+
 
         return true;
     }
