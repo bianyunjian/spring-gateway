@@ -9,24 +9,45 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class TokenUtil {
 
-    @Value("${app.token.expire-minutes}")
     public static int TOKEN_EXPIRE_MINUTES = 5;
+    public static String TOKEN_SIGN_KEY = "key";
+
+    @Value("${app.token.expire-minutes}")
+    public void setTokenExpireMinutes(int minutes) {
+        TOKEN_EXPIRE_MINUTES = minutes;
+    }
+
     @Value("${app.token.sign-key}")
-    public static String TOKEN_SIGN_KEY = "ezml-sign-key";
+    public void setTokenSignKey(String signKey) {
+        TOKEN_SIGN_KEY = signKey;
+    }
 
     public static final String Bearer_Prefix = "Bearer ";
     public static final String Authorization_Header = "Authorization";
 
+    private static TokenUtil _instance;
+    private static Object lockObj = new Object();
 
-    public static String generateAccessToken(Date issueAt, Date expireAt, String[] audienceArray) {
+    public static TokenUtil getInstance() {
+        synchronized (lockObj) {
+            if (_instance == null) {
+                _instance = new TokenUtil();
+            }
+            return _instance;
+        }
+    }
+
+    public String generateAccessToken(Date issueAt, Date expireAt, String[] audienceArray) {
 
         String accessToken = "";
         JWTCreator.Builder builder = JWT.create();
@@ -36,13 +57,13 @@ public class TokenUtil {
 
         accessToken = builder.withIssuedAt(issueAt)
                 .withExpiresAt(expireAt)
-                .sign(Algorithm.HMAC256(TokenUtil.TOKEN_SIGN_KEY));
+                .sign(Algorithm.HMAC256(this.TOKEN_SIGN_KEY));
 
         return accessToken;
 
     }
 
-    public static String generateRefreshToken(Date issueAt, Date expireAt, String[] audienceArray) {
+    public String generateRefreshToken(Date issueAt, Date expireAt, String[] audienceArray) {
         JWTCreator.Builder builder = JWT.create();
         if (audienceArray != null && audienceArray.length > 0) {
             builder.withAudience(audienceArray);
@@ -50,10 +71,10 @@ public class TokenUtil {
 
         return builder.withIssuedAt(issueAt)
                 .withExpiresAt(expireAt)
-                .sign(Algorithm.HMAC256(TokenUtil.TOKEN_SIGN_KEY));
+                .sign(Algorithm.HMAC256(this.TOKEN_SIGN_KEY));
     }
 
-    public static boolean verifyPassword(String password, String passwordBase64) {
+    public boolean verifyPassword(String password, String passwordBase64) {
         try {
             Base64.Encoder encoder = Base64.getEncoder();
             String encodeString = encoder.encodeToString(password.getBytes("UTF-8"));
@@ -64,11 +85,11 @@ public class TokenUtil {
         return false;
     }
 
-    public static UserTokenInfo decodeToken(String token) {
+    public UserTokenInfo decodeToken(String token) {
         UserTokenInfo userTokenInfo = new UserTokenInfo();
         ;
         // 验证 token
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(TokenUtil.TOKEN_SIGN_KEY)).build();
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(this.TOKEN_SIGN_KEY)).build();
         try {
             jwtVerifier.verify(token);
 

@@ -50,7 +50,7 @@ public class IndexController {
             String passwordBase64 = userData.getPassword();
             String userName = userData.getUserName();
             String userId = userData.getUserId();
-            if (TokenUtil.verifyPassword(param.getPassword(), passwordBase64) == false) {
+            if (TokenUtil.getInstance().verifyPassword(param.getPassword(), passwordBase64) == false) {
                 obj.fail("username or password incorrect");
                 return obj;
             }
@@ -59,20 +59,20 @@ public class IndexController {
 
             Date issueAt = new Date();
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES);
+            calendar.add(Calendar.MINUTE, TokenUtil.getInstance().TOKEN_EXPIRE_MINUTES);
             Date expireAt = calendar.getTime();
             resp.setIssuedAt(issueAt);
             resp.setExpiresAt(expireAt);
 
             String[] audienceArray = {resp.getUserId(), resp.getUserName()};
-            String accessToken = TokenUtil.generateAccessToken(issueAt, expireAt, audienceArray);
+            String accessToken = TokenUtil.getInstance().generateAccessToken(issueAt, expireAt, audienceArray);
             resp.setAccessToken(accessToken);
 
 
             Calendar calendar4RefreshToken = Calendar.getInstance();
-            calendar4RefreshToken.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES * 10);
+            calendar4RefreshToken.add(Calendar.MINUTE, TokenUtil.getInstance().TOKEN_EXPIRE_MINUTES * 10);
             Date expireAt4RefreshToken = calendar4RefreshToken.getTime();
-            String refreshToken = TokenUtil.generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray);
+            String refreshToken = TokenUtil.getInstance().generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray);
             resp.setRefreshToken(refreshToken);
             resp.setValid(true);
             obj.success("success", resp);
@@ -94,7 +94,7 @@ public class IndexController {
         LoginOutResp resp = new LoginOutResp();
 
         if (param != null && StringUtils.isEmpty(param.getAccessToken()) == false) {
-            UserTokenInfo userTokenInfo = TokenUtil.decodeToken(param.getAccessToken());
+            UserTokenInfo userTokenInfo = TokenUtil.getInstance().decodeToken(param.getAccessToken());
             if (userTokenInfo != null
                     && StringUtils.isEmpty(userTokenInfo.getUserId()) == false) {
                 TokenManager.removeTokenCache(userTokenInfo.getUserId());
@@ -113,7 +113,7 @@ public class IndexController {
         RefreshTokenResp resp = new RefreshTokenResp();
 
         String requestRefreshToken = param.getRefreshToken();
-        UserTokenInfo userTokenInfo = TokenUtil.decodeToken(requestRefreshToken);
+        UserTokenInfo userTokenInfo = TokenUtil.getInstance().decodeToken(requestRefreshToken);
         if (userTokenInfo != null
                 && StringUtils.isEmpty(userTokenInfo.getUserId()) == false) {
 
@@ -123,7 +123,7 @@ public class IndexController {
 
                 Date issueAt = new Date();
                 Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES);
+                calendar.add(Calendar.MINUTE, TokenUtil.getInstance().TOKEN_EXPIRE_MINUTES);
                 Date expireAt = calendar.getTime();
                 userTokenInfo.setIssuedAt(issueAt);
                 userTokenInfo.setExpiresAt(expireAt);
@@ -132,14 +132,14 @@ public class IndexController {
                         userTokenInfo.getUserId(),
                         userTokenInfo.getUserName()
                 };
-                String accessToken = TokenUtil.generateAccessToken(issueAt, expireAt, audienceArray);
+                String accessToken = TokenUtil.getInstance().generateAccessToken(issueAt, expireAt, audienceArray);
                 resp.setAccessToken(accessToken);
                 userTokenInfo.setAccessToken(accessToken);
 
                 Calendar calendar4RefreshToken = Calendar.getInstance();
-                calendar4RefreshToken.add(Calendar.MINUTE, TokenUtil.TOKEN_EXPIRE_MINUTES * 10);
+                calendar4RefreshToken.add(Calendar.MINUTE, TokenUtil.getInstance().TOKEN_EXPIRE_MINUTES * 10);
                 Date expireAt4RefreshToken = calendar4RefreshToken.getTime();
-                String newRefreshToken = TokenUtil.generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray);
+                String newRefreshToken = TokenUtil.getInstance().generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray);
                 resp.setRefreshToken(newRefreshToken);
                 userTokenInfo.setRefreshToken(newRefreshToken);
                 TokenManager.updateTokenCache(userTokenInfo);

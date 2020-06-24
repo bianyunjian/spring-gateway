@@ -71,7 +71,7 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
             if (!StringUtils.isEmpty(token)) {
 
                 //有token,处理token
-                UserTokenInfo tokenInfo = TokenUtil.decodeToken(token);
+                UserTokenInfo tokenInfo = TokenUtil.getInstance().decodeToken(token);
                 if (tokenInfo != null && tokenInfo.isValid()) {
                     //检查token是否在缓存中, 如果不在缓存中，说明已经失效
                     boolean checkMatchCache = false;
