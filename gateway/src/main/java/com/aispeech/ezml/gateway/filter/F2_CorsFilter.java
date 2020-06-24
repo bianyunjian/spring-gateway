@@ -26,14 +26,14 @@ public class F2_CorsFilter implements WebFilter {
         ServerHttpResponse response = ctx.getResponse();
         HttpMethod requestMethod = requestHeaders.getAccessControlRequestMethod();
         HttpHeaders headers = response.getHeaders();
-        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, requestHeaders.getOrigin());
+        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
         headers.addAll(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, requestHeaders.getAccessControlRequestHeaders());
-        if (requestMethod != null) {
-            headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, requestMethod.name());
-        }
+
+        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "POST, GET, OPTIONS");
+
         headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
         headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "all");
-        headers.add(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "3600");
+        headers.add(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "86400");
         if (request.getMethod() == HttpMethod.OPTIONS) {
             response.setStatusCode(HttpStatus.OK);
             return Mono.empty();

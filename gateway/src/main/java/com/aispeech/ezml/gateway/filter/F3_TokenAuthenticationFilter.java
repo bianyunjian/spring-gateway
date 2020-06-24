@@ -30,6 +30,8 @@ import java.util.List;
 public class F3_TokenAuthenticationFilter implements WebFilter {
     @Value("${app.filter.enable-token-auth}")
     public boolean ENABLE_TOKEN_AUTH = true;
+    @Value("${app.filter.enable-token-auth-check-cache}")
+    public boolean ENABLE_TOKEN_AUTH_CHECK_CACHE = true;
 
     private List<String> tokenAuthIgnorePathList = new ArrayList<>();
 
@@ -72,8 +74,13 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
                 UserTokenInfo tokenInfo = TokenUtil.decodeToken(token);
                 if (tokenInfo != null && tokenInfo.isValid()) {
                     //检查token是否在缓存中, 如果不在缓存中，说明已经失效
-                    boolean checkPass = TokenManager.checkAccessToken(tokenInfo.getUserId(), token);
-                    if (checkPass) {
+                    boolean checkMatchCache = false;
+                    if (ENABLE_TOKEN_AUTH_CHECK_CACHE) {
+                        checkMatchCache = TokenManager.checkAccessToken(tokenInfo.getUserId(), token);
+                    } else {
+                        checkMatchCache = true;
+                    }
+                    if (checkMatchCache) {
                         //把用户信息设置到header中，传递给后端服务
                         mutate.header("userId", tokenInfo.getUserId());
                         mutate.header("userName", tokenInfo.getUserName());
@@ -109,8 +116,8 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
     private boolean checkNeedAuth(ServerHttpRequest request) {
         if (ENABLE_TOKEN_AUTH == false) return false;
 
-        String method=request.getMethodValue();
-        if(method.equalsIgnoreCase(HttpMethod.OPTIONS.toString())){
+        String method = request.getMethodValue();
+        if (method.equalsIgnoreCase(HttpMethod.OPTIONS.toString())) {
             return false;
         }
 
