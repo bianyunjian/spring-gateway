@@ -132,6 +132,7 @@ public class TokenUtil {
 
         } catch (JWTVerificationException e) {
             System.out.println("token密钥验证无效");
+            System.out.println(e);
             userTokenInfo.setValid(false);
         }
 
