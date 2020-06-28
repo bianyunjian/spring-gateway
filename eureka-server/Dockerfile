@@ -3,5 +3,5 @@ VOLUME /tmp
 ADD target/eureka-server-0.0.1-SNAPSHOT.jar /app.jar
 ENV TimeZone Asia/Shanghai
 RUN bash -c  'touch /app.jar'
-EXPOSE 80
+EXPOSE 10010
 ENTRYPOINT ["java","-Xmx1024m","-Xms512m","-jar","/app.jar"]
