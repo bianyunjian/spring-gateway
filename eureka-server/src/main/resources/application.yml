@@ -1,5 +1,5 @@
 server:
-  port: 10010
+  port: 9100
 
 spring:
   profiles:
@@ -19,7 +19,7 @@ management:
 
 eureka-cluster-register:
   ip: localhost
-  port: 10010
+  port: ${server.port}
 
 
 eureka:
