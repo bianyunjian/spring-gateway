@@ -1,0 +1,45 @@
+Running 10s test @ http://gateway.k3s.com/user-service/user/table
+  1 threads and 1 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    24.14ms    7.21ms  84.88ms   85.21%
+    Req/Sec    42.00      8.99    70.00     78.00%
+  Latency Distribution
+     50%   24.69ms
+     75%   26.16ms
+     90%   27.28ms
+     99%   60.68ms
+  420 requests in 10.01s, 1.71MB read
+Requests/sec:     41.97
+Transfer/sec:    174.81KB
+
+
+Running 10s test @ http://gateway.k3s.com/user-service/user/table
+  5 threads and 5 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    28.95ms   14.98ms 138.24ms   90.29%
+    Req/Sec    36.35     11.20    60.00     57.46%
+  Latency Distribution
+     50%   23.72ms
+     75%   30.16ms
+     90%   43.46ms
+     99%   91.64ms
+  1809 requests in 10.02s, 7.36MB read
+Requests/sec:    180.51
+Transfer/sec:    751.85KB
+
+
+Running 10s test @ http://gateway.k3s.com/user-service/user/table
+  10 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    44.43ms   19.83ms 198.02ms   87.76%
+    Req/Sec    23.15      7.18    40.00     85.28%
+  Latency Distribution
+     50%   39.03ms
+     75%   46.86ms
+     90%   66.45ms
+     99%  124.36ms
+  2304 requests in 10.01s, 9.37MB read
+Requests/sec:    230.08
+Transfer/sec:      0.94MB
+
+

@@ -1,8 +1,3 @@
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiMTAwMDEiLCJieWoiXSwiZXhwIjoxNTkyNTYwNTg2LCJpYXQiOjE1OTI1NjAyODZ9.xVyc4VfWa5iptLSsPBM7Njv_yZr-IPaoN3WvCK8h40Y
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiMTAwMDEiLCJieWoiXSwiZXhwIjoxNTkyNTYwNTYzLCJpYXQiOjE1OTI1NjAyNjN9.QPQb2SQhvGsj35tm0dib_FlxeX1tNe7oPB2j-xNdrwA
-
-https://git.aispeech.com.cn/ezml/gateway.git
-
 
 
  wrk -t1 -c10 -d10s 
