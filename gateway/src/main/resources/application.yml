@@ -53,6 +53,11 @@ eureka:
     service-url:
       defaultZone: http://172.16.114.245:10010/eureka/
 
+    #eureka client刷新本地缓存时间
+    #默认30s
+    registry-fetch-interval-seconds: 5
+ribbon:
+  server-list-refresh-interval: 3000 # Ribbon更新周期
 
 # 远程管理,暴露监控端点
 management:
