@@ -1,6 +1,10 @@
 package com.aispeech.ezml.gateway.support;
 
+import com.aispeech.ezml.gateway.auth.PermissionVO;
+import com.aispeech.ezml.gateway.auth.RoleVO;
 import com.aispeech.ezml.gateway.base.UserTokenInfo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
@@ -112,6 +116,20 @@ public class TokenUtil {
                         userTokenInfo.setUserName(userName);
                     }
                 }
+                if (audienceList.size() > 2) {
+                    String roleJsonString = audienceList.get(2);
+                    if (StringUtils.isEmpty(roleJsonString) == false) {
+                        userTokenInfo.setRole(JSON.parseObject(roleJsonString, RoleVO.class));
+                    }
+                }
+                if (audienceList.size() > 3) {
+                    String permissionJsonString = audienceList.get(3);
+                    if (StringUtils.isEmpty(permissionJsonString) == false) {
+                        userTokenInfo.setPermissionList(JSON.parseObject(permissionJsonString, new TypeReference<List<PermissionVO>>() {
+                        }));
+                    }
+                }
+
             }
 
             if (expireAt != null) {

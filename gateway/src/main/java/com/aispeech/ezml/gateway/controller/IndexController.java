@@ -7,6 +7,7 @@ import com.aispeech.ezml.gateway.base.UserTokenInfo;
 import com.aispeech.ezml.gateway.service.UserService;
 import com.aispeech.ezml.gateway.support.TokenManager;
 import com.aispeech.ezml.gateway.support.TokenUtil;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -21,7 +22,8 @@ import java.util.Date;
 
 @RestController
 public class IndexController {
-
+    @Autowired
+    private TokenManager TokenManager;
     @Autowired
     private UserService userService;
 
@@ -50,6 +52,12 @@ public class IndexController {
             String passwordBase64 = userData.getPassword();
             String userName = userData.getUserName();
             String userId = userData.getUserId();
+
+            if (userData.getStatus() != 0) {
+                obj.fail("user has been disabled, cannot login");
+                return obj;
+            }
+
             if (TokenUtil.getInstance().verifyPassword(param.getPassword(), passwordBase64) == false) {
                 obj.fail("username or password incorrect");
                 return obj;
@@ -64,7 +72,15 @@ public class IndexController {
             resp.setIssuedAt(issueAt);
             resp.setExpiresAt(expireAt);
 
-            String[] audienceArray = {resp.getUserId(), resp.getUserName()};
+            String roleJsonString = JSON.toJSONString(userData.getRole());
+//            String permissionJsonString = JSON.toJSONString(userData.getPermissionList().stream().map(t -> t.getId()).distinct().collect(Collectors.toList()));
+            String permissionJsonString = JSON.toJSONString(userData.getPermissionList());
+            String[] audienceArray = {
+                    userId,
+                    userName,
+                    roleJsonString,
+                    permissionJsonString,
+            };
             String accessToken = TokenUtil.getInstance().generateAccessToken(issueAt, expireAt, audienceArray);
             resp.setAccessToken(accessToken);
 
@@ -72,7 +88,10 @@ public class IndexController {
             Calendar calendar4RefreshToken = Calendar.getInstance();
             calendar4RefreshToken.add(Calendar.MINUTE, TokenUtil.getInstance().TOKEN_EXPIRE_MINUTES * 10);
             Date expireAt4RefreshToken = calendar4RefreshToken.getTime();
-            String refreshToken = TokenUtil.getInstance().generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray);
+            String[] audienceArray4RefreshToken = {
+                    userId, userName,
+            };
+            String refreshToken = TokenUtil.getInstance().generateRefreshToken(issueAt, expireAt4RefreshToken, audienceArray4RefreshToken);
             resp.setRefreshToken(refreshToken);
             resp.setValid(true);
             obj.success("success", resp);

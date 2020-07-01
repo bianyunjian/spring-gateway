@@ -1,45 +1,96 @@
 package com.aispeech.ezml.gateway.support;
 
 import com.aispeech.ezml.gateway.base.UserTokenInfo;
+import com.alibaba.fastjson.JSON;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class TokenManager {
 
-    //TODO  use Redis to store token
+    public static boolean useRedis = true;
+    public static final String REDIS_KEY_PREFIX = "TOKEN_";
     private static ConcurrentHashMap<String, UserTokenInfo> userTokenInfoHashMap = new ConcurrentHashMap<>();
 
-    public static UserTokenInfo getUserTokenInfo(String userId) {
-        if (userTokenInfoHashMap.containsKey(userId)) {
-            return userTokenInfoHashMap.get(userId);
+    @Resource
+    private RedisUtil redisUtil;
+
+    public UserTokenInfo getUserTokenInfo(String userId) {
+        if (useRedis) {
+            String key = REDIS_KEY_PREFIX + userId;
+            if (redisUtil.hasKey(key)) {
+                return JSON.parseObject((String) redisUtil.get(key), UserTokenInfo.class);
+            }
+
+        } else {
+            if (userTokenInfoHashMap.containsKey(userId)) {
+                return userTokenInfoHashMap.get(userId);
+            }
         }
+
+
         return null;
     }
 
-    public static void updateTokenCache(UserTokenInfo userTokenInfo) {
+    public void updateTokenCache(UserTokenInfo userTokenInfo) {
+        if (useRedis) {
 
-        if (userTokenInfoHashMap.containsKey(userTokenInfo.getUserId())) {
-            userTokenInfoHashMap.replace(userTokenInfo.getUserId(), userTokenInfo);
+            String key = REDIS_KEY_PREFIX + userTokenInfo.getUserId();
+            redisUtil.set(key, JSON.toJSONString(userTokenInfo));
+
         } else {
-            userTokenInfoHashMap.put(userTokenInfo.getUserId(), userTokenInfo);
+            if (userTokenInfoHashMap.containsKey(userTokenInfo.getUserId())) {
+                userTokenInfoHashMap.replace(userTokenInfo.getUserId(), userTokenInfo);
+            } else {
+                userTokenInfoHashMap.put(userTokenInfo.getUserId(), userTokenInfo);
+            }
+        }
+
+    }
+
+    public void removeTokenCache(String userId) {
+        if (useRedis) {
+            String key = REDIS_KEY_PREFIX + userId;
+            redisUtil.del(key);
+        } else {
+            userTokenInfoHashMap.remove(userId);
         }
     }
 
-    public static void removeTokenCache(String userId) {
-        userTokenInfoHashMap.remove(userId);
-    }
-
-    public static boolean checkAccessToken(String userId, String accessToken) {
-        if (userTokenInfoHashMap.containsKey(userId)) {
-            return userTokenInfoHashMap.get(userId).getAccessToken().equals(accessToken);
+    public boolean checkAccessToken(String userId, String accessToken) {
+        if (useRedis) {
+            String key = REDIS_KEY_PREFIX + userId;
+            if (redisUtil.hasKey(key)) {
+                UserTokenInfo info = JSON.parseObject((String) redisUtil.get(key), UserTokenInfo.class);
+                if (info != null) {
+                    return info.getAccessToken().equals(accessToken);
+                }
+            }
+        } else {
+            if (userTokenInfoHashMap.containsKey(userId)) {
+                return userTokenInfoHashMap.get(userId).getAccessToken().equals(accessToken);
+            }
         }
         return false;
     }
 
-    public static boolean checkRefreshToken(String userId, String refreshToken) {
-        if (userTokenInfoHashMap.containsKey(userId)) {
-            return userTokenInfoHashMap.get(userId).getRefreshToken().equals(refreshToken);
+    public boolean checkRefreshToken(String userId, String refreshToken) {
+        if (useRedis) {
+            String key = REDIS_KEY_PREFIX + userId;
+            if (redisUtil.hasKey(key)) {
+                UserTokenInfo info = JSON.parseObject((String) redisUtil.get(key), UserTokenInfo.class);
+                if (info != null) {
+                    return info.getRefreshToken().equals(refreshToken);
+                }
+            }
+        } else {
+            if (userTokenInfoHashMap.containsKey(userId)) {
+                return userTokenInfoHashMap.get(userId).getRefreshToken().equals(refreshToken);
+            }
         }
+
         return false;
     }
 

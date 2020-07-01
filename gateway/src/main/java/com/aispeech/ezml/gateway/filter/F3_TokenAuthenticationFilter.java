@@ -3,10 +3,12 @@ package com.aispeech.ezml.gateway.filter;
 import com.aispeech.ezml.gateway.base.BaseResponse;
 import com.aispeech.ezml.gateway.base.ErrorCode;
 import com.aispeech.ezml.gateway.base.UserTokenInfo;
+import com.aispeech.ezml.gateway.support.PrivilegeChecker;
 import com.aispeech.ezml.gateway.support.TokenManager;
 import com.aispeech.ezml.gateway.support.TokenUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +23,7 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -32,6 +35,11 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
     public boolean ENABLE_TOKEN_AUTH = true;
     @Value("${app.filter.enable-token-auth-check-cache}")
     public boolean ENABLE_TOKEN_AUTH_CHECK_CACHE = true;
+
+    @Autowired
+    private TokenManager TokenManager;
+    @Autowired
+    private PrivilegeChecker PrivilegeChecker;
 
     private List<String> tokenAuthIgnorePathList = new ArrayList<>();
 
@@ -52,10 +60,13 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
         ServerHttpRequest.Builder mutate = request.mutate();
         ServerHttpResponse response = exchange.getResponse();
 
+        String requestMethod = request.getMethodValue();
+        String requestPath = request.getPath().toString();
+
         try {
-            //检查是否需要验证
-            if (checkNeedAuth(request) == false) {
-                System.out.println("pass through with no auth");
+            //检查该请求是否需要验证
+            if (checkNeedAuth(requestMethod, requestPath) == false) {
+                System.out.println("pass through with no auth for " + requestMethod + ":" + requestPath);
                 return chain.filter(exchange);
             }
 
@@ -68,34 +79,46 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
             String token = header.substring(TokenUtil.Bearer_Prefix.length());
 
             boolean tokenValid = false;
+            String validateMessage = "";
             if (!StringUtils.isEmpty(token)) {
 
-                //有token,处理token
+                //解析token
                 UserTokenInfo tokenInfo = TokenUtil.getInstance().decodeToken(token);
                 if (tokenInfo != null && tokenInfo.isValid()) {
-                    //检查token是否在缓存中, 如果不在缓存中，说明已经失效
+                    //检查token信息是否有效
                     boolean checkMatchCache = false;
                     if (ENABLE_TOKEN_AUTH_CHECK_CACHE) {
+                        //检查token是否在网关缓存中, 如果不在缓存中，说明已经失效
                         checkMatchCache = TokenManager.checkAccessToken(tokenInfo.getUserId(), token);
                     } else {
                         checkMatchCache = true;
                     }
                     if (checkMatchCache) {
-                        //把用户信息设置到header中，传递给后端服务
-                        mutate.header("userId", tokenInfo.getUserId());
-                        mutate.header("userName", tokenInfo.getUserName());
-                        mutate.build();
-                        tokenValid = true;
+
+                        if (PrivilegeChecker.checkUserPrivilegeForRequestPath(tokenInfo, requestPath)) {
+                            //把用户信息设置到header中，传递给后端服务
+                            mutate.header("userId", tokenInfo.getUserId());
+
+                            String userNameBase64Str = Base64.getEncoder().encodeToString(tokenInfo.getUserName().getBytes()); //header中有中文必须编码
+                            mutate.header("userNameBase64", userNameBase64Str);
+                            mutate.build();
+                            tokenValid = true;
+                        } else {
+                            validateMessage = "用户没有调用当前接口的权限";
+                        }
+                    } else {
+                        validateMessage = "用户token已在网关缓存中失效";
                     }
                 } else {
-                    //TODO token 无效或者过期的处理
+                    //token 无效或者过期
+                    validateMessage = "用户token无效或者过期";
                 }
             }
 
             if (tokenValid == false) {
                 //token无效
-                System.out.println("token无效");
-                DataBuffer bodyDataBuffer = responseErrorInfo(response, HttpStatus.UNAUTHORIZED.toString(), "未通过鉴权的请求");
+                System.out.println(validateMessage);
+                DataBuffer bodyDataBuffer = responseErrorInfo(response, HttpStatus.UNAUTHORIZED.toString(), "未通过鉴权的请求," + validateMessage);
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.writeWith(Mono.just(bodyDataBuffer));
             } else {
@@ -113,27 +136,33 @@ public class F3_TokenAuthenticationFilter implements WebFilter {
 
     }
 
-    private boolean checkNeedAuth(ServerHttpRequest request) {
+
+    /**
+     * check if need auth for the requestPath
+     *
+     * @param requestMethod
+     * @param requestPath
+     * @return
+     */
+    private boolean checkNeedAuth(String requestMethod, String requestPath) {
         if (ENABLE_TOKEN_AUTH == false) return false;
 
-        String method = request.getMethodValue();
-        if (method.equalsIgnoreCase(HttpMethod.OPTIONS.toString())) {
+        if (requestMethod.equalsIgnoreCase(HttpMethod.OPTIONS.toString())) {
             return false;
         }
 
-        String path = request.getPath().toString();
         if (tokenAuthIgnorePathList.size() > 0) {
             for (String ignorePathPattern :
                     tokenAuthIgnorePathList) {
                 if (ignorePathPattern.contains("*")) {
                     String matchPattern = ignorePathPattern.replace("*", "");
-                    if (path.contains(matchPattern)) {
-                        System.out.println("match token auth ignore path with [" + path + "]");
+                    if (requestPath.contains(matchPattern)) {
+                        System.out.println("match token auth ignore path with [" + requestPath + "]");
                         return false;
                     }
                 } else {
-                    if (ignorePathPattern.equalsIgnoreCase(path)) {
-                        System.out.println("match token auth ignore path with [" + path + "]");
+                    if (ignorePathPattern.equalsIgnoreCase(requestPath)) {
+                        System.out.println("match token auth ignore path with [" + requestPath + "]");
                         return false;
                     }
                 }
