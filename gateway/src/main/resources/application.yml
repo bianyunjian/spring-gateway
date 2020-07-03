@@ -34,6 +34,24 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true  # 服务名小写
+
+      routes:
+
+        - id: eureka-server
+          uri: ${app.eureka-server-uri}
+          predicates:
+            - Path=/eurekaServer/**
+          filters:
+            - StripPrefix=1
+
+        - id: eureka-server-static-resource
+          uri: ${app.eureka-server-uri}
+          predicates:
+            - Path=/eureka/**
+          filters:
+            - StripPrefix=0
+
+
   redis:
     database: 0
     host: 172.16.114.245
@@ -59,7 +77,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://172.16.114.245:10010/eureka/
+      defaultZone: ${app.eureka-server-uri}eureka/
 
     #eureka client刷新本地缓存时间
     #默认30s
@@ -82,12 +100,13 @@ management:
 
 
 app:
+  eureka-server-uri: http://127.0.0.1:10010/
   filter:
     extract-request-params: true     #是否提取请求参数， 上线u若影响性能可以关闭
     extract-response-body: true      #是否提取响应体， 上线u若影响性能可以关闭
     enable-token-auth: true          #是否开启token验证
     enable-token-auth-check-cache: false          #是否token必须存在网关缓存中
-    token-auth-ignore-path: /actuator,/actuator/*,/hello,/login,/loginOut,/refreshToken #忽略token验证的路由path， 多个path使用逗号分隔
+    token-auth-ignore-path: /eurekaServer,/eurekaServer/*,/eureka,/eureka/*,/actuator,/actuator/*,/hello,/login,/loginOut,/refreshToken #忽略token验证的路由path， 多个path使用逗号分隔
   token:
     expire-minutes: 300   #token过期时间（分钟）
     sign-key: ezml-sign-key  #token生成使用的加密密钥
