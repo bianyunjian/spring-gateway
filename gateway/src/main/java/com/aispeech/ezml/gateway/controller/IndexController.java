@@ -64,6 +64,7 @@ public class IndexController {
             }
             resp.setUserId(userId);
             resp.setUserName(userName);
+            resp.setLoginName(param.getUserName());
 
             Date issueAt = new Date();
             Calendar calendar = Calendar.getInstance();

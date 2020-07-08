@@ -12,6 +12,7 @@ public class UserTokenInfo {
 
     String userId;
     String userName;
+    String loginName;
     String accessToken;
     String refreshToken;
     Date issuedAt;
