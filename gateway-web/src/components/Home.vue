@@ -40,6 +40,7 @@
       </el-aside>
       <el-main id="main-container">
         <div class="default-div" v-show="!iframeShow">欢迎使用训练标注一体化平台</div>
+
         <iframe
           v-show="iframeShow"
           id="show-iframe"
@@ -50,7 +51,7 @@
         ></iframe>
       </el-main>
     </el-container>
-    <el-footer height="30px">{{footerInfo}}</el-footer>
+    <!-- <el-footer height="30px">{{footerInfo}}</el-footer> -->
   </el-container>
 </template>
 
@@ -72,9 +73,9 @@ export default {
   data() {
     return {
       footerInfo: "XXXXXXXX信息科技有限公司 © 2017 苏ICP备00000000号-0",
-      asideMenuCollapseWidth: "70px",
-      asideMenuExpandWidth: "200px",
-      asideMenuWidth: "200px",
+      asideMenuCollapseWidth: "65px",
+      asideMenuExpandWidth: "196px",
+      asideMenuWidth: "196px",
       isCollapse: false,
       defaultOpeneds: ["1"],
       currentUser: { userName: "" },
@@ -86,9 +87,7 @@ export default {
   mounted: function() {
     this.getCurrentUserInfo();
 
-    setTimeout(() => {
-      this.refreshIFrameSize();
-    }, 200);
+    this.refreshIFrameSize();
 
     window.addEventListener("resize", this.refreshIFrameSize);
 
@@ -101,28 +100,31 @@ export default {
 
   methods: {
     refreshIFrameSize() {
-      console.log("refreshIFrameSize");
+      var timeoutInterval = 200;
+      setTimeout(() => {
+        console.log("refreshIFrameSize");
 
-      const iframe = document.getElementById("show-iframe");
-      const mainContainer = document.getElementById("main-container");
+        const iframe = document.getElementById("show-iframe");
+        const mainContainer = document.getElementById("main-container");
 
-      const mainContainerWidth = mainContainer.clientWidth;
-      const mainContainerHeight = mainContainer.clientHeight;
-      console.log(
-        "mainContainerWidth:",
-        mainContainerWidth,
-        "mainContainerHeight:",
-        mainContainerHeight
-      );
+        const mainContainerWidth = mainContainer.clientWidth;
+        const mainContainerHeight = mainContainer.clientHeight;
+        console.log(
+          "mainContainerWidth:",
+          mainContainerWidth,
+          "mainContainerHeight:",
+          mainContainerHeight
+        );
 
-      iframe.style.width = mainContainerWidth - 5 + "px";
-      iframe.style.height = mainContainerHeight - 5 + "px";
-      console.log(
-        "iframe.style.width:",
-        iframe.style.width,
-        "iframe.style.height:",
-        iframe.style.height
-      );
+        iframe.style.width = mainContainerWidth - 40 + "px";
+        iframe.style.height = mainContainerHeight - 40 + "px";
+        console.log(
+          "iframe.style.width:",
+          iframe.style.width,
+          "iframe.style.height:",
+          iframe.style.height
+        );
+      }, timeoutInterval);
     },
     getCurrentUserInfo() {
       var d = getUserData();
@@ -176,9 +178,7 @@ export default {
       } else {
         this.asideMenuWidth = this.asideMenuExpandWidth;
       }
-      setTimeout(() => {
-        this.refreshIFrameSize();
-      }, 200);
+      this.refreshIFrameSize();
     },
     openMenuItem(m, sm) {
       console.log(m.name, "---", sm.name, "---", sm.path);
@@ -272,6 +272,8 @@ export default {
 <style>
 .el-container {
   height: 100%;
+
+  background: #f5f7fa;
 }
 .el-header {
   background-color: #b3c0d1;
@@ -292,15 +294,17 @@ export default {
 .el-aside {
   background-color: #fff;
   color: #333;
-  text-align: center;
+  text-align: left;
+  overflow: hidden;
 }
 
 .el-main {
-  background-color: #e9eef3;
-
+  background: #fff;
   text-align: center;
-
+  margin: 20px;
   padding: 0px;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.05) 1px 0px 4px;
 }
 
 .logo {
@@ -329,15 +333,17 @@ export default {
   color: #333;
   line-height: 40px;
   font-size: 14px;
+  text-align: center;
 }
 
 .menuCollapse {
-  width: 60px;
+  width: 64px;
   border-right: solid 1px #eae6e6;
   cursor: pointer;
   color: #333;
   line-height: 40px;
   font-size: 14px;
+  text-align: center;
 }
 .menuExpand:hover,
 .menuCollapse:hover {
@@ -346,5 +352,9 @@ export default {
 
 .default-div {
   padding: 50px;
+}
+
+.iframe-div {
+  background: #fff;
 }
 </style>

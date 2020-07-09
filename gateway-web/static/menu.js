@@ -8,14 +8,14 @@ window.MENU_CONFIG = [
             {
                 index: "1-1",
                 name: "语言模型",
-                path: "",
-                requirePermission: "声学模型训练"
+                path: "/ezml-lmtrain-web/#/",
+                requirePermission: "语言模型训练"
             },
             {
                 index: "1-2",
                 name: "声学模型",
-                path: "",
-                requirePermission: "语言模型训练"
+                path: "/ezml-amtrain-web/#/",
+                requirePermission: "声学模型训练"
             }
         ]
     },
@@ -26,32 +26,32 @@ window.MENU_CONFIG = [
         menuItems: [
             {
                 index: "2-1",
-                name: "标注任务",
-                path: "",
+                name: "标注大厅",
+                path: "/ezml-datalabel-web/#/process",
                 requirePermission: "人工标注"
             },
             {
                 index: "2-2",
-                name: "审核任务",
-                path: "",
+                name: "审核大厅",
+                path: "/ezml-datalabel-web/#/verify",
                 requirePermission: "标注任务审核"
             },
             {
                 index: "2-3",
                 name: "我的发布",
-                path: "",
+                path: "/ezml-datalabel-web/#/myPublish",
                 requirePermission: "发布标注任务"
             },
             {
                 index: "2-4",
                 name: "我的标注",
-                path: "",
+                path: "/ezml-datalabel-web/#/myProcess",
                 requirePermission: "人工标注"
             },
             {
                 index: "2-5",
                 name: "我的审核",
-                path: "",
+                path: "/ezml-datalabel-web/#/myVerify",
                 requirePermission: "标注任务审核"
             }
         ]
@@ -64,13 +64,13 @@ window.MENU_CONFIG = [
             {
                 index: "3-1",
                 name: "模型测试",
-                path: "",
+                path: "/ezml-modeleval-web/#/",
                 requirePermission: "模型测试"
             },
             {
                 index: "3-2",
                 name: "测试记录",
-                path: "",
+                path: "/ezml-modeleval-web/#/",
                 requirePermission: "模型测试"
             }
         ]
