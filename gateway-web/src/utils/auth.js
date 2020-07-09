@@ -4,8 +4,12 @@ const AccessTokenKey = 'ezml-access-token'
 const RefreshTokenKey = 'ezml-refresh-token'
 const UserDataKey = 'ezml-user-data'
 export function getAccessToken() {
+  var token = storage.getItem(AccessTokenKey);
+  if (token) {
+    token = token.replace(/"/g, '');
+  }
+  return token;
 
-  return storage.getItem(AccessTokenKey);
 }
 
 export function setAccessToken(token) {
@@ -13,14 +17,20 @@ export function setAccessToken(token) {
 }
 
 export function removeAccessToken() {
+
   return storage.removeItem(AccessTokenKey)
 }
 export function getRefreshToken() {
 
-  return storage.getItem(RefreshTokenKey);
+  var token = storage.getItem(RefreshTokenKey);
+  if (token) {
+    token = token.replace(/"/g, '');
+  }
+  return token;
 }
 
 export function setRefreshToken(token) {
+
   return storage.setItem(RefreshTokenKey, token)
 }
 

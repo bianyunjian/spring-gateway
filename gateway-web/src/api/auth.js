@@ -7,9 +7,17 @@ function login(data) {
         method: 'post',
         data
     })
-} function loginOut(data) {
+}
+
+function loginOut(data) {
     return request({
         url: '/loginOut',
+        method: 'post',
+        data
+    })
+} function refreshToken(data) {
+    return request({
+        url: '/refreshToken',
         method: 'post',
         data
     })
@@ -17,7 +25,8 @@ function login(data) {
 
 export default {
     login,
-    loginOut
+    loginOut,
+    refreshToken
 }
 
 

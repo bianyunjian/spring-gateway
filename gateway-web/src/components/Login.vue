@@ -1,20 +1,19 @@
 <template>
   <div>
-    <div>
-      <div class="loginFormDiv">
-        <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="用户名">
-            <el-input v-model="form.userName"></el-input>
-          </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="form.password" type="password"></el-input>
-          </el-form-item>
+    <div class="title-div">欢迎使用训练标注一体化平台</div>
+    <div class="loginFormDiv">
+      <el-form ref="form" :model="form" label-width="80px">
+        <el-form-item label="用户名">
+          <el-input v-model="form.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="form.password" type="password"></el-input>
+        </el-form-item>
 
-          <el-form-item>
-            <el-button type="primary" @click="doLogin">立即登录</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+        <el-form-item>
+          <el-button type="primary" @click="doLogin">立即登录</el-button>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
@@ -27,7 +26,7 @@ export default {
   data() {
     return {
       form: {
-        userName: "admin2@aispeech.com",
+        userName: "admin@aispeech.com",
         password: "123456"
       }
     };
@@ -69,9 +68,13 @@ export default {
 </script>
 
 <style>
+.title-div {
+  padding: 50px;
+  font-size: 20px;
+}
 .loginFormDiv {
   width: 300px;
-  margin: 100px auto;
+  margin: 20px auto;
   border: solid 1px;
   padding: 15px;
 }

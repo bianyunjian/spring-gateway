@@ -36,6 +36,7 @@ service.interceptors.request.use(
   error => {
     // do something with request error
     console.log(error) // for debug
+
     return Promise.reject(error)
   }
 )
@@ -65,12 +66,7 @@ service.interceptors.response.use(
 
     if (statusCode !== 200) {
 
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (statusCode === 401) {
-        console.log("401 need login");
 
-        this.$router.push('Login');
-      }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
       return res
@@ -83,6 +79,12 @@ service.interceptors.response.use(
       type: 'error',
       duration: 3 * 1000
     })
+    if (error.message && error.message.indexOf("401") >= 0) {
+      console.log("401 token invalid");
+      window.postMessage("ezml-401-token-invalid", "*");
+    }
+
+
     return Promise.reject(error)
   }
 )

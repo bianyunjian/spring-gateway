@@ -39,7 +39,15 @@
         </div>
       </el-aside>
       <el-main id="main-container">
-        <iframe id="show-iframe" frameborder="0" name="showHere" scrolling="auto" src></iframe>
+        <div class="default-div" v-show="!iframeShow">欢迎使用训练标注一体化平台</div>
+        <iframe
+          v-show="iframeShow"
+          id="show-iframe"
+          frameborder="0"
+          name="showHere"
+          scrolling="auto"
+          src
+        ></iframe>
       </el-main>
     </el-container>
     <el-footer height="30px">{{footerInfo}}</el-footer>
@@ -48,12 +56,16 @@
 
 <script>
 import userService from "@/api/user";
+import loginService from "@/api/auth";
 import {
   getUserData,
   setUserData,
   removeAccessToken,
   removeRefreshToken,
-  removeUserData
+  removeUserData,
+  setAccessToken,
+  setRefreshToken,
+  getRefreshToken
 } from "@/utils/auth";
 import { Message } from "element-ui";
 export default {
@@ -67,96 +79,8 @@ export default {
       defaultOpeneds: ["1"],
       currentUser: { userName: "" },
 
-      menuConfig: [
-        {
-          index: "1",
-          name: "训练平台",
-          icon: "el-icon-cpu",
-          menuItems: [
-            {
-              index: "1-1",
-              name: "语言模型",
-              path: ""
-            },
-            {
-              index: "1-2",
-              name: "声学模型",
-              path: ""
-            }
-          ]
-        },
-        {
-          index: "2",
-          name: "标注平台",
-          icon: "el-icon-edit",
-          menuItems: [
-            {
-              index: "2-1",
-              name: "标注任务",
-              path: ""
-            },
-            {
-              index: "2-2",
-              name: "审核任务",
-              path: ""
-            },
-            {
-              index: "2-3",
-              name: "我的发布",
-              path: ""
-            },
-            {
-              index: "2-4",
-              name: "我的标注",
-              path: ""
-            },
-            {
-              index: "2-5",
-              name: "我的审核",
-              path: ""
-            }
-          ]
-        },
-        {
-          index: "3",
-          name: "测试工具",
-          icon: "el-icon-aim",
-          menuItems: [
-            {
-              index: "3-1",
-              name: "模型测试",
-              path: ""
-            },
-            {
-              index: "3-2",
-              name: "测试记录",
-              path: ""
-            }
-          ]
-        },
-        {
-          index: "4",
-          name: "团队管理",
-          icon: "el-icon-user",
-          menuItems: [
-            {
-              index: "4-1",
-              name: "成员管理",
-              path: "/authmange_web/#/UserManage"
-            },
-            {
-              index: "4-2",
-              name: "权限管理",
-              path: "/authmange_web/#/RoleManage"
-            },
-            {
-              index: "4-3",
-              name: "权限配置",
-              path: "/authmange_web/#/PermissionManage"
-            }
-          ]
-        }
-      ]
+      menuConfig: [],
+      iframeShow: false
     };
   },
   mounted: function() {
@@ -167,9 +91,12 @@ export default {
     }, 200);
 
     window.addEventListener("resize", this.refreshIFrameSize);
+
+    window.addEventListener("message", this.receiveMessage, false);
   },
   destroyed: function name(params) {
     window.removeEventListener("resize", this.refreshIFrameSize);
+    window.removeEventListener("message", this.receiveMessage);
   },
 
   methods: {
@@ -210,6 +137,8 @@ export default {
               let data = res.data;
               data.userId = res.data.id;
               setUserData(data);
+
+              this.refreshMenuConfig(data, window.MENU_CONFIG);
             }
           });
           return;
@@ -247,13 +176,93 @@ export default {
       } else {
         this.asideMenuWidth = this.asideMenuExpandWidth;
       }
+      setTimeout(() => {
+        this.refreshIFrameSize();
+      }, 200);
     },
     openMenuItem(m, sm) {
       console.log(m.name, "---", sm.name, "---", sm.path);
 
       let path = sm.path;
       if (path) {
+        this.iframeShow = true;
         document.getElementById("show-iframe").src = path;
+      }
+    },
+
+    refreshMenuConfig(userData, mc) {
+      let filterMenuConfig = [];
+
+      mc.forEach(m => {
+        let smArray = [];
+        for (let index = 0; index < m.menuItems.length; index++) {
+          const sm = m.menuItems[index];
+          if (sm.requirePermission == undefined || sm.requirePermission == "") {
+            smArray.push(sm);
+          } else {
+            let checkPermission = sm.requirePermission;
+
+            if (userData.permissionList) {
+              let checkPassed = false;
+              userData.permissionList.forEach(p => {
+                if (p.permissionName == checkPermission) {
+                  checkPassed = true;
+                  return;
+                }
+              });
+              if (checkPassed) {
+                smArray.push(sm);
+              }
+            }
+          }
+        }
+        if (smArray.length > 0) {
+          filterMenuConfig.push({
+            index: m.index,
+            name: m.name,
+            icon: m.icon,
+            menuItems: smArray
+          });
+        }
+      });
+
+      this.menuConfig = filterMenuConfig;
+    },
+
+    receiveMessage(event) {
+      console.log(event);
+      var origin = event.origin;
+      var data = event.data;
+      if (data === "ezml-401-token-invalid") {
+        //refreshToken
+        var refreshToken = getRefreshToken();
+        if (!refreshToken) {
+          this.logOut(false);
+          return;
+        }
+        refreshToken = refreshToken.replace('"', "");
+        var self = this;
+        let req = { refreshToken: refreshToken };
+
+        loginService.refreshToken(req).then(res => {
+          console.log("refreshToken:", res);
+          if (res) {
+            if (res.errorCode == 0) {
+              let d = res.data;
+
+              let accessToken = "Bearer " + d.accessToken.toString();
+              setAccessToken(accessToken);
+              let refreshToken = d.refreshToken.toString();
+              setRefreshToken(refreshToken);
+              console.log("刷新token成功");
+            } else {
+              Message({
+                message: res.message,
+                type: "error"
+              });
+            }
+          }
+        });
       }
     }
   }
@@ -333,5 +342,9 @@ export default {
 .menuExpand:hover,
 .menuCollapse:hover {
   background-color: #d9dbde;
+}
+
+.default-div {
+  padding: 50px;
 }
 </style>
