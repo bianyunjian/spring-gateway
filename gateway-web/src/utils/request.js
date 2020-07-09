@@ -20,16 +20,12 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-    let token = getAccessToken();
-    if (token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-
-      token = token.replace(/"/g, '');
+    var accessToken = getAccessToken();
+    if (accessToken) { 
+      accessToken = accessToken.replace(/"/g, '');
       // console.log(token);
 
-      config.headers['Authorization'] = token;
+      config.headers['Authorization'] = accessToken;
     }
     return config
   },

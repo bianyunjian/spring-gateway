@@ -8,13 +8,13 @@ window.MENU_CONFIG = [
             {
                 index: "1-1",
                 name: "语言模型",
-                path: "/ezml-lmtrain-web/#/",
+                path: "/lmtrain/#/languageModel",
                 requirePermission: "语言模型训练"
             },
             {
                 index: "1-2",
                 name: "声学模型",
-                path: "/ezml-amtrain-web/#/",
+                path: "/amtrain/#/acousticModel",
                 requirePermission: "声学模型训练"
             }
         ]
@@ -27,31 +27,31 @@ window.MENU_CONFIG = [
             {
                 index: "2-1",
                 name: "标注大厅",
-                path: "/ezml-datalabel-web/#/process",
+                path: "/label/#/process",
                 requirePermission: "人工标注"
             },
             {
                 index: "2-2",
                 name: "审核大厅",
-                path: "/ezml-datalabel-web/#/verify",
+                path: "/label/#/verify",
                 requirePermission: "标注任务审核"
             },
             {
                 index: "2-3",
                 name: "我的发布",
-                path: "/ezml-datalabel-web/#/myPublish",
+                path: "/label/#/myPublish",
                 requirePermission: "发布标注任务"
             },
             {
                 index: "2-4",
                 name: "我的标注",
-                path: "/ezml-datalabel-web/#/myProcess",
+                path: "/label/#/myProcess",
                 requirePermission: "人工标注"
             },
             {
                 index: "2-5",
                 name: "我的审核",
-                path: "/ezml-datalabel-web/#/myVerify",
+                path: "/label/#/myVerify",
                 requirePermission: "标注任务审核"
             }
         ]
@@ -64,13 +64,13 @@ window.MENU_CONFIG = [
             {
                 index: "3-1",
                 name: "模型测试",
-                path: "/ezml-modeleval-web/#/",
+                path: "/eval/#/modelTest",
                 requirePermission: "模型测试"
             },
             {
                 index: "3-2",
                 name: "测试记录",
-                path: "/ezml-modeleval-web/#/",
+                path: "/eval/#/testRecord",
                 requirePermission: "模型测试"
             }
         ]
@@ -83,17 +83,17 @@ window.MENU_CONFIG = [
             {
                 index: "4-1",
                 name: "成员管理",
-                path: "/ezml-authmanage-web/#/UserManage", requirePermission: "团队成员管理"
+                path: "/user/#/UserManage", requirePermission: "团队成员管理"
             },
             {
                 index: "4-2",
                 name: "权限管理",
-                path: "/ezml-authmanage-web/#/RoleManage", requirePermission: "团队权限管理"
+                path: "/user/#/RoleManage", requirePermission: "团队权限管理"
             },
             {
                 index: "4-3",
                 name: "权限配置",
-                path: "/ezml-authmanage-web/#/PermissionManage", requirePermission: "权限配置"
+                path: "/user/#/PermissionManage", requirePermission: "权限配置"
             }
         ]
     }
