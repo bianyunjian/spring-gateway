@@ -165,6 +165,7 @@ public class IndexController {
                 TokenManager.updateTokenCache(userTokenInfo);
 
                 obj.success("success refresh token", resp);
+                return obj;
             }
         }
 

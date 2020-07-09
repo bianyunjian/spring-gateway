@@ -108,8 +108,8 @@ app:
     enable-token-auth-check-cache: false          #是否token必须存在网关缓存中
     token-auth-ignore-path: /eurekaServer,/eurekaServer/*,/eureka,/eureka/*,/actuator,/actuator/*,/hello,/login,/loginOut,/refreshToken #忽略token验证的路由path， 多个path使用逗号分隔
   token:
-    expire-minutes: 300   #token过期时间（分钟）
-    sign-key: ezml-sign-key  #token生成使用的加密密钥
+    expire-minutes: 36000   #token过期时间（分钟）
+    sign-key: ezml-sign-key-a7b7c8 #token生成使用的加密密钥
   service:
     user-service: USER-SERVICE  #用户服务的注册名称
     user-service-api: /user/getUserInfo  #用户服务的接口地址
