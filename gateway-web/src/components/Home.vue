@@ -50,6 +50,7 @@
           frameborder="0"
           name="showHere"
           scrolling="auto"
+          style="display: block;"
           src
         ></iframe>
       </el-main>
@@ -120,7 +121,7 @@ export default {
         );
 
         // TODO
-        var margin = 5;
+        var margin = 0;
         iframe.style.width = mainContainerWidth - margin + "px";
         iframe.style.height = mainContainerHeight - margin + "px";
         console.log(
