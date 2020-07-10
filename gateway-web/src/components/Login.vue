@@ -1,37 +1,53 @@
 <template>
   <el-container>
-    <el-header height="40px">
+    <el-header height="70px">
       <div class="logo">
         <img src="./../assets/aispeech-logo.png" />
       </div>
+      <div class="logo-title">思必驰标注训练一体化平台</div>
     </el-header>
 
     <el-main id="main-container">
       <el-row>
-        <el-col :span="14">
-          <div class="adDiv">
-            <div>思必驰标注训练一体化平台</div>
-            <div>• 更专业的模型训练平台，大幅度提升识别性能</div>
-            <div>• 更简单的一体化平台，让工作更高效</div>
-            <div>• 更强大的功能支持，打通数据壁垒</div>
-          </div>
-        </el-col>
-        <el-col :span="10">
-          <div class="loginFormDiv">
-            <div>登录</div>
-            <br />
-            <el-form ref="loginform" :model="form" label-width="0px" :rules="rules">
-              <el-form-item label prop="userName">
-                <el-input v-model="form.userName" placeholder="请输入邮箱"></el-input>
-              </el-form-item>
-              <el-form-item label prop="password">
-                <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
-              </el-form-item>
+        <el-col :span="24">
+          <div class="loginDiv">
+            <el-row>
+              <el-col :span="12">
+                <div class="adDiv">
+                  <div class="title">思必驰标注训练一体化平台</div>
+                  <div class="sub-title-icon" style="margin-left: 80px;"></div>
+                  <div class="sub-title">更专业</div>
+                  <div class="sub-title-icon"></div>
+                  <div class="sub-title">更简单</div>
+                  <div class="sub-title-icon"></div>
+                  <div class="sub-title">更强大</div>
+                </div>
+              </el-col>
+              <el-col :span="12">
+                <div class="loginFormDiv">
+                  <div class="login-form-title">用户登录</div>
+                  <br />
+                  <el-form ref="loginform" :model="form" label-width="0px" :rules="rules">
+                    <el-form-item style="margin-bottom: 5px;">
+                      <div class="form-item-label">账户</div>
+                    </el-form-item>
+                    <el-form-item label prop="userName">
+                      <el-input v-model="form.userName" placeholder="请输入邮箱"></el-input>
+                    </el-form-item>
+                    <el-form-item style="margin-bottom: 5px;">
+                      <div class="form-item-label">密码</div>
+                    </el-form-item>
+                    <el-form-item label prop="password">
+                      <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
+                    </el-form-item>
 
-              <el-form-item>
-                <el-button type="primary" style="width:300px;" @click="submitForm">立即登录</el-button>
-              </el-form-item>
-            </el-form>
+                    <el-form-item>
+                      <el-button class="login-button" type="primary" @click="submitForm">登录</el-button>
+                    </el-form-item>
+                  </el-form>
+                </div>
+              </el-col>
+            </el-row>
           </div>
         </el-col>
       </el-row>
@@ -106,8 +122,12 @@ export default {
             });
             self.$router.push("Home");
           } else {
+            var errorMsg = "登录失败，请检查用户名与密码";
+            if (res.message.indexOf("disabled")) {
+              errorMsg = "登录失败，该用户已经被停用";
+            }
             Message({
-              message: "登录失败，请检查用户名与密码",
+              message: errorMsg,
               type: "error"
             });
           }
@@ -118,44 +138,130 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .el-container {
   height: 100%;
-  background: #f5f7fa;
+
+  background: rgba(246, 248, 250, 1);
 }
 .el-header {
-  background-color: #b3c0d1;
+  /* background-color: #b3c0d1; */
   color: #333;
   text-align: center;
   line-height: 30px;
   font-size: 13px;
+  /* border-bottom: solid 1px #eee; */
 }
 
 .el-main {
-  background: #fff;
   text-align: center;
   margin: 20px;
   padding: 0px;
   border-radius: 4px;
-  box-shadow: rgba(0, 0, 0, 0.05) 1px 0px 4px;
 }
 
 .logo {
   float: left;
 }
+.logo img {
+  width: 130px;
+  margin-top: 20px;
+}
+.logo-title {
+  float: left;
+  font-size: 16px;
+  font-family: NotoSansHans-Medium, NotoSansHans;
+  font-weight: 500;
+  color: rgba(74, 80, 94, 1);
+  line-height: 70px;
+}
+
+.loginDiv {
+  margin: 0 auto;
+  margin-top: 100px;
+  width: 940px;
+  height: 500px;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0px 2px 25px 0px rgba(220, 228, 238, 1);
+  border-radius: 4px;
+}
 
 .adDiv {
-  margin-top: 30%;
+  height: 500px;
   text-align: center;
   line-height: 35px;
+  background-image: url("./../assets/bg_login_tiny.png");
+  background-repeat: round;
+}
+.adDiv .title {
+  font-size: 26px;
+  font-family: NotoSansHans-Medium, NotoSansHans;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  line-height: 39px;
+  padding-top: 70px;
+  padding-bottom: 20px;
+}
+
+.adDiv .sub-title-icon {
+  float: left;
+  background-image: url("./../assets/icon_check.png");
+  background-repeat: round;
+  width: 16px;
+  height: 13px;
+  margin-right: 5px;
+  margin-top: 5px;
+}
+.adDiv .sub-title {
+  float: left;
+  font-size: 16px;
+  font-family: NotoSansHans-Regular, NotoSansHans;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+  line-height: 24px;
+  margin-right: 50px;
 }
 
 .loginFormDiv {
-  margin-top: 30%;
   text-align: center;
-  width: 300px;
-  border: solid 1px #ddd;
-  border-radius: 5px;
-  padding: 25px;
+  padding: 0px 70px;
+}
+
+.login-form-title {
+  text-align: center;
+  height: 24px;
+  font-size: 24px;
+  font-family: NotoSansHans-Medium, NotoSansHans;
+  font-weight: 500;
+  color: rgba(74, 80, 94, 1);
+  line-height: 36px;
+  margin-top: 75px;
+}
+
+.login-button {
+  width: 330px;
+  background: rgba(64, 158, 255, 1);
+  border-radius: 4px;
+  margin-top: 50px;
+}
+.form-item-label {
+  text-align: left;
+  font-size: 14px;
+  font-family: NotoSansHans-Regular, NotoSansHans;
+  font-weight: 400;
+  color: rgba(116, 130, 146, 1);
+  line-height: 21px;
+}
+</style>
+
+<style  >
+.el-input__inner {
+  border-radius: 0px;
+  border-top-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 1px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 </style>

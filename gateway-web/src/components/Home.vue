@@ -4,6 +4,7 @@
       <div class="logo">
         <img src="./../assets/aispeech-logo.png" />
       </div>
+      <div class="logo-title">思必驰标注训练一体化平台</div>
       <div class="user-info">
         欢迎你，{{currentUser.userName}}
         <el-link type="primary" @click="logOut(true)">退出</el-link>
@@ -276,15 +277,17 @@ export default {
 <style scoped>
 .el-container {
   height: 100%;
-  background: #f5f7fa;
+  /* background: #f5f7fa; */
 }
 
 .el-header {
-  background-color: #b3c0d1;
+  /* background-color: #b3c0d1; */
+  /* background-color: rgb(0, 21, 41); */
   color: #333;
   text-align: center;
   line-height: 30px;
   font-size: 13px;
+  border-bottom: solid 1px #eee;
 }
 .main-container-wrapper {
   height: calc(100% - 40px);
@@ -318,6 +321,22 @@ export default {
 .logo {
   float: left;
 }
+
+.logo img {
+  width: 130px;
+  margin-top: 5px;
+}
+.logo-title {
+  float: left;
+
+  height: 16px;
+  font-size: 16px;
+  font-family: NotoSansHans-Medium, NotoSansHans;
+  font-weight: 500;
+  color: rgba(74, 80, 94, 1);
+  line-height: 42px;
+}
+
 .user-info {
   float: right;
   line-height: 20px;
