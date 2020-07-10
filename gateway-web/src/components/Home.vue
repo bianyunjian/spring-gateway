@@ -9,7 +9,7 @@
         <el-link type="primary" @click="logOut(true)">退出</el-link>
       </div>
     </el-header>
-    <el-container>
+    <el-container class="main-container-wrapper">
       <el-aside :width="asideMenuWidth">
         <el-menu
           default-active="1-4-1"
@@ -17,6 +17,8 @@
           :collapse="isCollapse"
           :default-openeds="defaultOpeneds"
           :unique-opened="true"
+          background-color="#001529"
+          text-color="#fff"
         >
           <el-submenu v-for="m in menuConfig" :key="m.name" :index="m.index">
             <template slot="title">
@@ -73,9 +75,9 @@ export default {
   data() {
     return {
       footerInfo: "XXXXXXXX信息科技有限公司 © 2017 苏ICP备00000000号-0",
-      asideMenuCollapseWidth: "65px",
-      asideMenuExpandWidth: "196px",
-      asideMenuWidth: "196px",
+      asideMenuCollapseWidth: "64px",
+      asideMenuExpandWidth: "195px",
+      asideMenuWidth: "195px",
       isCollapse: false,
       defaultOpeneds: ["1"],
       currentUser: { userName: "" },
@@ -116,8 +118,10 @@ export default {
           mainContainerHeight
         );
 
-        iframe.style.width = mainContainerWidth - 40 + "px";
-        iframe.style.height = mainContainerHeight - 40 + "px";
+        // TODO
+        var margin = 5;
+        iframe.style.width = mainContainerWidth - margin + "px";
+        iframe.style.height = mainContainerHeight - margin + "px";
         console.log(
           "iframe.style.width:",
           iframe.style.width,
@@ -269,18 +273,21 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .el-container {
   height: 100%;
-
   background: #f5f7fa;
 }
+
 .el-header {
   background-color: #b3c0d1;
   color: #333;
   text-align: center;
   line-height: 30px;
   font-size: 13px;
+}
+.main-container-wrapper {
+  height: calc(100% - 40px);
 }
 
 .el-footer {
@@ -292,7 +299,7 @@ export default {
 }
 
 .el-aside {
-  background-color: #fff;
+  background: #001529;
   color: #333;
   text-align: left;
   overflow: hidden;
@@ -301,9 +308,10 @@ export default {
 .el-main {
   background: #fff;
   text-align: center;
-  margin: 20px;
+  margin: 0px;
+  /* TODO  */
   padding: 0px;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   box-shadow: rgba(0, 0, 0, 0.05) 1px 0px 4px;
 }
 
@@ -325,12 +333,14 @@ export default {
 .el-menu-vertical-demo.el-menu {
   height: calc(100% - 45px);
 }
-
+.el-menu-item.is-active {
+  background-color: rgb(18, 48, 76) !important;
+}
 .menuExpand {
   width: 195px;
   border-right: solid 1px #eae6e6;
   cursor: pointer;
-  color: #333;
+  color: #fff;
   line-height: 40px;
   font-size: 14px;
   text-align: center;
@@ -340,21 +350,17 @@ export default {
   width: 64px;
   border-right: solid 1px #eae6e6;
   cursor: pointer;
-  color: #333;
+  color: #fff;
   line-height: 40px;
   font-size: 14px;
   text-align: center;
 }
 .menuExpand:hover,
 .menuCollapse:hover {
-  background-color: #d9dbde;
+  background-color: rgb(18, 48, 76);
 }
 
 .default-div {
   padding: 50px;
-}
-
-.iframe-div {
-  background: #fff;
 }
 </style>
