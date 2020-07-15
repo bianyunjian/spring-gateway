@@ -75,6 +75,7 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
   client:
     service-url:
       defaultZone: ${app.eureka-server-uri}eureka/
