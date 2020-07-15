@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.TEXT_PLAIN;
 
 /**
  * 全局过滤器
@@ -52,29 +56,36 @@ public class F4_ResponseFilter implements WebFilter {
 
                 }
                 if (body instanceof Flux) {
-                    flux = (Flux<DataBuffer>) body;
-                    return super.writeWith(flux.buffer().map(dataBuffers -> {
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        dataBuffers.forEach(i -> {
-                            byte[] array = new byte[i.readableByteCount()];
-                            i.read(array);
-                            DataBufferUtils.release(i);
-                            outputStream.write(array, 0, array.length);
-                        });
-                        String result = outputStream.toString();
-                        try {
-                            if (outputStream != null) {
-                                outputStream.close();
+
+                    MediaType contentType = getDelegate().getHeaders().getContentType();
+                    System.out.println("response Content-Type :" + contentType.toString());
+                    if ((APPLICATION_JSON.isCompatibleWith(contentType))
+                            || (TEXT_PLAIN.isCompatibleWith(contentType))) {
+
+                        flux = (Flux<DataBuffer>) body;
+                        return super.writeWith(flux.buffer().map(dataBuffers -> {
+                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                            dataBuffers.forEach(i -> {
+                                byte[] array = new byte[i.readableByteCount()];
+                                i.read(array);
+                                DataBufferUtils.release(i);
+                                outputStream.write(array, 0, array.length);
+                            });
+                            String result = outputStream.toString();
+                            try {
+                                if (outputStream != null) {
+                                    outputStream.close();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        System.out.println("response body:" + result);
-                        return bufferFactory.wrap(result.getBytes());
-                    }));
+                            System.out.println("response body:" + result);
+                            return bufferFactory.wrap(result.getBytes());
+
+                        }));
+                    }
                 }
 
-                System.out.println("response(no flux) body:" + body);
                 return super.writeWith(body);
             }
 

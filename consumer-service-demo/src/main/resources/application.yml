@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: demo    #服务注册的名称
+  servlet:
+    multipart:
+      max-file-size:  500MB
+      max-request-size: 500MB
+
 eureka:
   instance:
     prefer-ip-address: true #优先使用ip地址注册
