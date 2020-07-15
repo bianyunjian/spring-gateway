@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -58,9 +59,17 @@ public class F4_ResponseFilter implements WebFilter {
                 if (body instanceof Flux) {
 
                     MediaType contentType = getDelegate().getHeaders().getContentType();
+                    ContentDisposition contentDispostion = getDelegate().getHeaders().getContentDisposition();
+
                     System.out.println("response Content-Type :" + contentType.toString());
-                    if ((APPLICATION_JSON.isCompatibleWith(contentType))
-                            || (TEXT_PLAIN.isCompatibleWith(contentType))) {
+                    System.out.println("response Content-Dispostion :" + contentDispostion.toString());
+
+                    boolean extractBody = (APPLICATION_JSON.isCompatibleWith(contentType))
+                            || (TEXT_PLAIN.isCompatibleWith(contentType));
+
+                    extractBody &= ContentDisposition.empty().toString().equals(contentDispostion.toString());
+
+                    if (extractBody) {
 
                         flux = (Flux<DataBuffer>) body;
                         return super.writeWith(flux.buffer().map(dataBuffers -> {
