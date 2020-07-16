@@ -240,6 +240,8 @@ export default {
       var origin = event.origin;
       var data = event.data;
       if (data === "ezml-401-token-invalid") {
+        this.logOut(false);
+        return;
         //refreshToken
         var refreshToken = getRefreshToken();
         if (!refreshToken) {
