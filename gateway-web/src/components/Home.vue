@@ -72,6 +72,7 @@ import {
   setRefreshToken,
   getRefreshToken
 } from "@/utils/auth";
+import storage from "@/utils/storage.js";
 import { Message } from "element-ui";
 export default {
   data() {
@@ -190,7 +191,9 @@ export default {
       console.log(m.name, "---", sm.name, "---", sm.path);
 
       let path = sm.path;
+      let activePath = sm.activePath;
       if (path) {
+        storage.setItem("activePath", activePath);
         this.iframeShow = true;
         document.getElementById("show-iframe").src = path;
       }
