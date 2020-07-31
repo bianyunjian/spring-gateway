@@ -1,5 +1,5 @@
 server:
-  port: 9100
+  port: 10010
 
 spring:
   profiles:
@@ -27,7 +27,7 @@ eureka:
     hostname: localhost
 
     #    清理未续约节点超时时间
-    lease-expiration-duration-in-seconds: 30
+    lease-expiration-duration-in-seconds: 5
 
   server:
     enable-self-preservation: false #禁用保护模式

@@ -36,20 +36,27 @@ spring:
           lower-case-service-id: true  # 服务名小写
 
       routes:
-
         - id: eureka-server
           uri: ${app.eureka-server-uri}
           predicates:
             - Path=/eurekaServer/**
           filters:
             - StripPrefix=1
-
         - id: eureka-server-static-resource
           uri: ${app.eureka-server-uri}
           predicates:
             - Path=/eureka/**
           filters:
             - StripPrefix=0
+#        - id: demo
+#          # lb代表从注册中心获取服务，且已负载均衡方式转发
+#          uri: lb://demo   #注册中心的服务名称
+#          predicates:
+#            - Path=/**    #匹配的请求路由
+#            # 加上StripPrefix=1，否则转发到后端服务时会带上consumer前缀
+#          filters:
+#            - StripPrefix=1
+
 
 
   redis:
@@ -60,15 +67,6 @@ spring:
     timeout: 1000
 
 
-#      routes:
-#        - id: demo-service
-#          # lb代表从注册中心获取服务，且已负载均衡方式转发
-#          uri: lb://demo-service   #注册中心的服务名称
-#          predicates:
-#            - Path=/demo/**    #匹配的请求路由
-#            # 加上StripPrefix=1，否则转发到后端服务时会带上consumer前缀
-#          filters:
-#            - StripPrefix=1
 
 
 
@@ -83,8 +81,8 @@ eureka:
     #eureka client刷新本地缓存时间
     #默认30s
     registry-fetch-interval-seconds: 5
-ribbon:
-  server-list-refresh-interval: 3000 # Ribbon更新周期
+#ribbon:
+#  server-list-refresh-interval: 3000 # Ribbon更新周期
 
 
 
@@ -107,7 +105,7 @@ app:
     extract-response-body: true      #是否提取响应体， 上线若影响性能可以关闭
     enable-token-auth: true          #是否开启token验证
     enable-token-auth-check-cache: false          #是否token必须存在网关缓存中
-    token-auth-ignore-path: /eurekaServer,/eurekaServer/*,/eureka,/eureka/*,/actuator,/actuator/*,/hello,/login,/loginOut,/refreshToken #忽略token验证的路由path， 多个path使用逗号分隔
+    token-auth-ignore-path: /eurekaServer,/eurekaServer/*,/eureka,/eureka/*,/config/*,/demo/*,/actuator,/actuator/*,/hello,/login,/loginOut,/refreshToken #忽略token验证的路由path， 多个path使用逗号分隔
   token:
     expire-minutes: 36000   #token过期时间（分钟）
     sign-key: ezml-sign-key-a7b7c8 #token生成使用的加密密钥

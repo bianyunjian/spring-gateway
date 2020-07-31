@@ -15,6 +15,8 @@ eureka:
     lease-renewal-interval-in-seconds: 5  #表示eureka client发送心跳给server端的频率
     lease-expiration-duration-in-seconds: 5   #等待下一次心跳的超时时间，在这个时间内若没收到下一次心跳，则将移除该instance
   client:
+    # 指示到eureka服务器的HTTP连接在关闭之前可以保持空闲的时间(以秒为单位)
+    eureka-connection-idle-timeout-seconds: 3
     healthcheck:  #健康检查， 如果启用该配置， 则需要引入 spring-boot-starter-actuator
       enabled: true
     service-url:  #eureka server的地址
