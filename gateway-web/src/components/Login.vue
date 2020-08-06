@@ -7,50 +7,46 @@
       <div class="logo-title">思必驰标注训练一体化平台</div>
     </el-header>
 
-    <el-main id="main-container">
-      <el-row>
-        <el-col :span="24">
-          <div class="loginDiv">
-            <el-row>
-              <el-col :span="12">
-                <div class="adDiv">
-                  <div class="title">思必驰标注训练一体化平台</div>
-                  <div class="sub-title-icon" style="margin-left: 80px;"></div>
-                  <div class="sub-title">更专业</div>
-                  <div class="sub-title-icon"></div>
-                  <div class="sub-title">更简单</div>
-                  <div class="sub-title-icon"></div>
-                  <div class="sub-title">更强大</div>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="loginFormDiv">
-                  <div class="login-form-title">用户登录</div>
-                  <br />
-                  <el-form ref="loginform" :model="form" label-width="0px" :rules="rules">
-                    <el-form-item style="margin-bottom: 5px;">
-                      <div class="form-item-label">账户</div>
-                    </el-form-item>
-                    <el-form-item label prop="userName">
-                      <el-input v-model="form.userName" placeholder="请输入邮箱"></el-input>
-                    </el-form-item>
-                    <el-form-item style="margin-bottom: 5px;">
-                      <div class="form-item-label">密码</div>
-                    </el-form-item>
-                    <el-form-item label prop="password">
-                      <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
-                    </el-form-item>
+    <el-main id="main-container" class="flex-center">
+      <div class="loginDiv">
+        <el-row>
+          <el-col :span="12">
+            <div class="adDiv">
+              <div class="title">思必驰标注训练一体化平台</div>
+              <div class="sub-title-icon" style="margin-left: 80px;"></div>
+              <div class="sub-title">更专业</div>
+              <div class="sub-title-icon"></div>
+              <div class="sub-title">更简单</div>
+              <div class="sub-title-icon"></div>
+              <div class="sub-title">更强大</div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="loginFormDiv">
+              <div class="login-form-title">用户登录</div>
+              <br />
+              <el-form ref="loginform" :model="form" label-width="0px" :rules="rules">
+                <el-form-item style="margin-bottom: 5px;">
+                  <div class="form-item-label">账户</div>
+                </el-form-item>
+                <el-form-item label prop="userName">
+                  <el-input v-model="form.userName" placeholder="请输入邮箱"></el-input>
+                </el-form-item>
+                <el-form-item style="margin-bottom: 5px;">
+                  <div class="form-item-label">密码</div>
+                </el-form-item>
+                <el-form-item label prop="password">
+                  <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
+                </el-form-item>
 
-                    <el-form-item>
-                      <el-button class="login-button" type="primary" @click="submitForm">登录</el-button>
-                    </el-form-item>
-                  </el-form>
-                </div>
-              </el-col>
-            </el-row>
-          </div>
-        </el-col>
-      </el-row>
+                <el-form-item>
+                  <el-button class="login-button" type="primary" @click="submitForm">登录</el-button>
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
     </el-main>
   </el-container>
 </template>
@@ -155,7 +151,7 @@ export default {
 
 .el-main {
   text-align: center;
-  margin: 20px;
+  /* margin: 20px; */
   padding: 0px;
   border-radius: 4px;
 }
@@ -176,9 +172,27 @@ export default {
   line-height: 70px;
 }
 
+.flex-center {
+  display: flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  align-items:center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  -o-align-items: center;
+  justify-content:center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  -ms-justify-content: center;
+  -o-justify-content: center;
+  height:100%;
+}
+
 .loginDiv {
   margin: 0 auto;
-  margin-top: 100px;
+  /* margin-top: 100px; */
   width: 940px;
   height: 500px;
   background: rgba(255, 255, 255, 1);
