@@ -27,7 +27,7 @@
               <span slot="title">{{m.name}}</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item
+              <el-menu-item style="padding-left: 53px;"
                 v-for="sm in m.menuItems"
                 :key="sm.name"
                 :index="sm.index"
