@@ -97,6 +97,8 @@ export default {
     window.addEventListener("resize", this.refreshIFrameSize);
 
     window.addEventListener("message", this.receiveMessage, false);
+
+    this.loadLatestPage();
   },
   destroyed: function name(params) {
     window.removeEventListener("resize", this.refreshIFrameSize);
@@ -194,8 +196,20 @@ export default {
       let activePath = sm.activePath;
       if (path) {
         storage.setItem("activePath", activePath);
+        storage.setItem("activeUrl", path)
         this.iframeShow = true;
         document.getElementById("show-iframe").src = path;
+      }
+    },
+
+    loadLatestPage() {
+      let path = storage.getItem("activeUrl")
+      if (path) {
+        this.iframeShow = true
+        console.log('last visit: ' + path)
+        document.getElementById("show-iframe").src = path
+      } else {
+        this.iframeShow = false
       }
     },
 
