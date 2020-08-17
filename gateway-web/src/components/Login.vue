@@ -121,6 +121,8 @@ export default {
             var errorMsg = "登录失败，请检查用户名与密码";
             if (res.message.indexOf("disabled")) {
               errorMsg = "登录失败，该用户已经被停用";
+            } else if (res.message.indexof("username or password incorrect")) {
+              errorMsg = "用户名或密码错误"
             }
             Message({
               message: errorMsg,
